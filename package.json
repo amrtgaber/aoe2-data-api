@@ -6,6 +6,14 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "prisma:dev:deploy": "npx prisma migrate deploy",
+    "db:dev:rm": "docker compose rm dev-db -sfv",
+    "db:dev:up": "docker compose up dev-db -d",
+    "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up && npm run prisma:dev:deploy",
+    "prisma:test:deploy": "dotenv -e .test.env -- npx prisma migrate deploy",
+    "db:test:rm": "docker compose rm test-db -sfv",
+    "db:test:up": "docker compose up test-db -d",
+    "db:test:restart": "npm run db:test:rm && npm run db:test:up && npm run prisma:test:deploy",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -14,19 +22,34 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
+    "pretest": "npm run db:test:restart",
+    "test": "dotenv -e .test.env -- jest",
+    "pretest:watch": "npm run db:test:restart",
+    "test:watch": "dotenv -e .test.env -- jest --watch",
+    "pretest:cov": "npm run db:test:restart",
+    "test:cov": "dotenv -e .test.env -- jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "pretest:e2e": "npm run db:test:restart",
+    "test:e2e": "dotenv -e .test.env -- jest --watch --no-cache --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
+    "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.0.0",
+    "@nestjs/jwt": "^9.0.0",
+    "@nestjs/passport": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
+    "@nestjs/swagger": "^6.0.4",
+    "@prisma/client": "^4.1.0",
+    "argon2": "^0.28.7",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.13.2",
+    "passport": "^0.6.0",
+    "passport-jwt": "^4.0.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.2.0",
+    "swagger-ui-express": "^4.5.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
@@ -35,14 +58,19 @@
     "@types/express": "^4.17.13",
     "@types/jest": "28.1.4",
     "@types/node": "^16.0.0",
+    "@types/passport-jwt": "^3.0.6",
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
+    "dotenv-cli": "^6.0.0",
     "eslint": "^8.0.1",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
     "jest": "28.1.2",
+    "jest-mock-extended": "^2.0.7",
+    "pactum": "^3.1.13",
     "prettier": "^2.3.2",
+    "prisma": "^4.1.0",
     "source-map-support": "^0.5.20",
     "supertest": "^6.1.3",
     "ts-jest": "28.0.5",
@@ -67,5 +95,8 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   }
 }
