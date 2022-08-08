@@ -9,6 +9,11 @@
     "node": "16.x"
   },
   "scripts": {
+    "dev:prod:seed": "ts-node prisma/seed.ts",
+    "prisma:prod:deploy": "npx prisma migrate deploy",
+    "db:prod:rm": "docker compose rm prod-db -sfv",
+    "db:prod:up": "docker compose up prod-db -d",
+    "db:prod:restart": "npm run db:dev:rm && npm run db:dev:up && npm run prisma:dev:deploy && npm run dev:prod:seed",
     "prisma:dev:deploy": "npx prisma migrate deploy",
     "db:dev:rm": "docker compose rm dev-db -sfv",
     "db:dev:up": "docker compose up dev-db -d",
@@ -23,6 +28,7 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
+    "prestart:prod": "npm run db:prod:restart",
     "start:prod": "node dist/src/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "pretest": "npm run db:test:restart",
