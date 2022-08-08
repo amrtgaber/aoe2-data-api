@@ -8,7 +8,9 @@ export class PrismaService extends PrismaClient {
     super({
       datasources: {
         db: {
-          url: config.get('DATABASE_URL') || process.env.DATABASE_URL,
+          url:
+            config.get('DATABASE_URL') ||
+            process.env.HEROKU_POSTGRESQL_BROWN_URL,
         },
       },
     });

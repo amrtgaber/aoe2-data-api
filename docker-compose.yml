@@ -1,7 +1,8 @@
 version: '4.10'
 services:
   dev-db:
-    image: postgres:13
+    env_file: .env
+    image: postgres:latest
     ports:
       - 5434:5432
     environment:
@@ -9,9 +10,9 @@ services:
       POSTGRES_PASSWORD: 123
       POSTGRES_DB: nest
     networks:
-      - freecodecamp
+      - appnetwork
   test-db:
-    image: postgres:13
+    image: postgres:latest
     ports:
       - 5435:5432
     environment:
@@ -19,6 +20,6 @@ services:
       POSTGRES_PASSWORD: 123
       POSTGRES_DB: nest
     networks:
-      - freecodecamp
+      - appnetwork
 networks:
-  freecodecamp:
+  appnetwork:

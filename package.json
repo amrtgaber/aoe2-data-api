@@ -1,6 +1,6 @@
 {
   "name": "aoe2-data-api",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "author": "",
   "private": true,
@@ -9,16 +9,12 @@
     "node": "16.x"
   },
   "scripts": {
-    "dev:prod:seed": "ts-node prisma/seed.ts",
-    "prisma:prod:deploy": "npx prisma migrate deploy",
-    "db:prod:rm": "docker compose rm prod-db -sfv",
-    "db:prod:up": "docker compose up prod-db -d",
-    "db:prod:restart": "npm run db:dev:rm && npm run db:dev:up && npm run prisma:dev:deploy && npm run dev:prod:seed",
-    "prisma:dev:deploy": "npx prisma migrate deploy",
+    "db:seed": "ts-node prisma/seed.ts",
+    "prisma:deploy": "prisma migrate deploy",
     "db:dev:rm": "docker compose rm dev-db -sfv",
     "db:dev:up": "docker compose up dev-db -d",
-    "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up && npm run prisma:dev:deploy",
-    "prisma:test:deploy": "dotenv -e .test.env -- npx prisma migrate deploy",
+    "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up && npm run prisma:deploy && npm run db:seed",
+    "prisma:test:deploy": "dotenv -e .test.env -- prisma migrate deploy",
     "db:test:rm": "docker compose rm test-db -sfv",
     "db:test:up": "docker compose up test-db -d",
     "db:test:restart": "npm run db:test:rm && npm run db:test:up && npm run prisma:test:deploy",
@@ -26,9 +22,10 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
+    "prestart:dev": "npm run db:dev:restart",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "prestart:prod": "npm run db:prod:restart",
+    "prestart:prod": "npm run prisma:deploy && npm run db:seed",
     "start:prod": "node dist/src/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "pretest": "npm run db:test:restart",
@@ -58,7 +55,8 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
-    "swagger-ui-express": "^4.5.0"
+    "swagger-ui-express": "^4.5.0",
+    "ts-node": "^10.9.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
@@ -84,7 +82,6 @@
     "supertest": "^6.1.3",
     "ts-jest": "28.0.5",
     "ts-loader": "^9.2.3",
-    "ts-node": "^10.0.0",
     "tsconfig-paths": "4.0.0",
     "typescript": "^4.3.5"
   },
