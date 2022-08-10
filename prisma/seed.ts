@@ -4,6 +4,8 @@ import { civs } from './seed-data';
 const prisma = new PrismaClient();
 
 async function main() {
+  await prisma.civ.deleteMany({});
+
   civs.forEach(async (civ) => {
     await prisma.civ.upsert({
       where: {
