@@ -22,7 +22,7 @@ export const civs: CreateCivDto[] = [
   { civName: 'Huns' },
   { civName: 'Incas' },
   { civName: 'Italians' },
-  { civName: 'Japanses' },
+  { civName: 'Japanese' },
   { civName: 'Khmer' },
   { civName: 'Koreans' },
   { civName: 'Lithuanians' },
