@@ -30,3 +30,33 @@ model Civ {
 
   @@map("civs")
 }
+
+model Unit {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  unitName String @unique
+
+  @@map("units")
+}
+
+model Tech {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  techName String @unique
+
+  @@map("techs")
+}
+
+model Building {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  buildingName String @unique
+
+  @@map("buildings")
+}
