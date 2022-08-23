@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { civs } from './seed-data';
+import { civs } from './seed-data/civs';
 
 const prisma = new PrismaClient();
 

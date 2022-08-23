@@ -1,4 +1,4 @@
-import { CreateCivDto } from '../src/civ/dto/create-civ.dto';
+import { CreateCivDto } from '../../src/civ/dto/create-civ.dto';
 
 export const civs: CreateCivDto[] = [
   { civName: 'Aztecs' },
