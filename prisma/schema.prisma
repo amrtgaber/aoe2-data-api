@@ -28,6 +28,10 @@ model Civ {
 
   civName String @unique
 
+  units     Unit[]
+  techs     Tech[]
+  buildings Building[]
+
   @@map("civs")
 }
 
@@ -37,6 +41,8 @@ model Unit {
   updatedAt DateTime @updatedAt
 
   unitName String @unique
+
+  civs Civ[]
 
   @@map("units")
 }
@@ -48,6 +54,8 @@ model Tech {
 
   techName String @unique
 
+  civs Civ[]
+
   @@map("techs")
 }
 
@@ -57,6 +65,8 @@ model Building {
   updatedAt DateTime @updatedAt
 
   buildingName String @unique
+
+  civs Civ[]
 
   @@map("buildings")
 }
