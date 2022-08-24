@@ -23,7 +23,7 @@ main()
   });
 
 async function addUnits() {
-  await prisma.unit.deleteMany({});
+  await prisma.unit.deleteMany();
 
   units.forEach(async (unit) => {
     await prisma.unit.upsert({
@@ -37,7 +37,7 @@ async function addUnits() {
 }
 
 async function addTechs() {
-  await prisma.tech.deleteMany({});
+  await prisma.tech.deleteMany();
 
   techs.forEach(async (tech) => {
     await prisma.tech.upsert({
@@ -51,7 +51,7 @@ async function addTechs() {
 }
 
 async function addBuildings() {
-  await prisma.building.deleteMany({});
+  await prisma.building.deleteMany();
 
   buildings.forEach(async (building) => {
     await prisma.building.upsert({
@@ -65,7 +65,7 @@ async function addBuildings() {
 }
 
 async function addTechTrees() {
-  await prisma.civ.deleteMany({});
+  await prisma.civ.deleteMany();
 
   techTree.forEach(async (techTree) => {
     await prisma.civ.upsert({

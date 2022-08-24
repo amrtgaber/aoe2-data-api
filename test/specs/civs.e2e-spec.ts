@@ -1,16 +1,15 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import * as pactum from 'pactum';
-import * as argon from 'argon2';
 
-import { AppModule } from '../src/app.module';
-import { AuthDto } from '../src/auth/dto/auth.dto';
-import { PrismaService } from '../src/prisma/prisma.service';
-import { CreateCivDto } from '../src/civ/dto/create-civ.dto';
-import { UpdateCivDto } from '../src/civ/dto/update-civ.dto';
+import { AppModule } from '../../src/app.module';
+import { PrismaService } from '../../src/prisma/prisma.service';
+import { CreateCivDto } from '../../src/civ/dto/create-civ.dto';
+import { UpdateCivDto } from '../../src/civ/dto/update-civ.dto';
 import { ConfigService } from '@nestjs/config';
+import { login } from '../shared-test-functions';
 
-describe('App e2e', () => {
+describe('Civs e2e', () => {
   let app: INestApplication;
   let prisma: PrismaService;
 
@@ -25,7 +24,7 @@ describe('App e2e', () => {
     await app.init();
 
     const config = moduleFixture.get<ConfigService>(ConfigService);
-    const TEST_PORT = config.get('TEST_PORT');
+    const TEST_PORT = parseInt(config.get('TEST_PORT')!) + 1;
 
     await app.listen(TEST_PORT);
 
@@ -35,61 +34,15 @@ describe('App e2e', () => {
     pactum.request.setBaseUrl(`http://localhost:${TEST_PORT}`);
   });
 
+  beforeEach(async () => {
+    await login(prisma);
+  });
+
   afterAll(() => {
     app.close();
   });
 
-  describe('Auth', () => {
-    // hardcode authorized user
-    const user: AuthDto = {
-      email: 'test@test.com',
-      password: '111',
-    };
-
-    beforeAll(async () => {
-      const hash: string = await argon.hash(user.password);
-
-      await prisma.user.create({
-        data: {
-          email: user.email,
-          hash,
-        },
-      });
-    });
-
-    describe('login', () => {
-      it('should throw if email empty', async () => {
-        return pactum
-          .spec()
-          .post('/auth/login')
-          .withBody({ password: user.password })
-          .expectStatus(400);
-      });
-
-      it('should throw if password empty', async () => {
-        return pactum
-          .spec()
-          .post('/auth/login')
-          .withBody({ email: user.email })
-          .expectStatus(400);
-      });
-
-      it('should throw if body empty', async () => {
-        return pactum.spec().post('/auth/login').expectStatus(400);
-      });
-
-      it('should sign in', async () => {
-        return pactum
-          .spec()
-          .post('/auth/login')
-          .withBody(user)
-          .expectStatus(200)
-          .stores('userAccessToken', 'access_token');
-      });
-    });
-  });
-
-  describe('Civs', () => {
+  describe('Units', () => {
     const createCivDto: CreateCivDto = {
       civName: 'Aztecs',
     };
