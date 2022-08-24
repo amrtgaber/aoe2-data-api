@@ -17,13 +17,20 @@ export class BuildingService {
   }
 
   async findAll(): Promise<Building[]> {
-    return await this.prisma.building.findMany();
+    return await this.prisma.building.findMany({
+      include: {
+        civs: true,
+      },
+    });
   }
 
   async findOne(id: number): Promise<Building | null> {
     return await this.prisma.building.findUnique({
       where: {
         id,
+      },
+      include: {
+        civs: true,
       },
     });
   }

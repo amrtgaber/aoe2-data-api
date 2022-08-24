@@ -1,4 +1,4 @@
-import { Civ } from '@prisma/client';
+import { Building, Civ, Tech, Unit } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CivEntity implements Civ {
@@ -7,6 +7,15 @@ export class CivEntity implements Civ {
 
   @ApiProperty()
   civName: string;
+
+  @ApiProperty()
+  units: Unit[];
+
+  @ApiProperty()
+  techs: Tech[];
+
+  @ApiProperty()
+  buildings: Building[];
 
   @ApiProperty()
   createdAt: Date;

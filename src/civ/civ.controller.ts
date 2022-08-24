@@ -9,8 +9,14 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  NotFoundException,
 } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Civ } from '@prisma/client';
 
 import { JwtGuard } from '../auth/guard/jwt.guard';
@@ -37,10 +43,17 @@ export class CivController {
     return this.civService.findAll();
   }
 
-  @ApiOkResponse({ type: CivEntity || /* istanbul ignore next */ null })
+  @ApiOkResponse({ type: CivEntity })
+  @ApiNotFoundResponse()
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<Civ | null> {
-    return this.civService.findOne(+id);
+  async findOne(@Param('id') id: string): Promise<Civ> {
+    const civ = await this.civService.findOne(+id);
+
+    if (!civ) {
+      throw new NotFoundException('Civ id not found');
+    }
+
+    return civ;
   }
 
   @UseGuards(JwtGuard)

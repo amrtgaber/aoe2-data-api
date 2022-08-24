@@ -17,13 +17,20 @@ export class TechService {
   }
 
   async findAll(): Promise<Tech[]> {
-    return await this.prisma.tech.findMany();
+    return await this.prisma.tech.findMany({
+      include: {
+        civs: true,
+      },
+    });
   }
 
   async findOne(id: number): Promise<Tech | null> {
     return await this.prisma.tech.findUnique({
       where: {
         id,
+      },
+      include: {
+        civs: true,
       },
     });
   }

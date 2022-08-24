@@ -9,7 +9,6 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
-  HttpException,
   NotFoundException,
 } from '@nestjs/common';
 import {

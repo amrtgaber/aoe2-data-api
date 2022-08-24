@@ -17,13 +17,20 @@ export class UnitService {
   }
 
   async findAll(): Promise<Unit[]> {
-    return await this.prisma.unit.findMany();
+    return await this.prisma.unit.findMany({
+      include: {
+        civs: true,
+      },
+    });
   }
 
   async findOne(id: number): Promise<Unit | null> {
     return await this.prisma.unit.findUnique({
       where: {
         id,
+      },
+      include: {
+        civs: true,
       },
     });
   }

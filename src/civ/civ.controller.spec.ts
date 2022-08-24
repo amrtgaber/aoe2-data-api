@@ -1,5 +1,7 @@
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Civ } from '@prisma/client';
+
 import {
   Context,
   createMockContext,
@@ -95,6 +97,13 @@ describe('CivController', () => {
       const civ: Civ | null = await controller.findOne(testCiv.id.toString());
 
       expect(civ!.civName).toBe('Aztecs');
+    });
+
+    it('should return not found', async () => {
+      mockCtx.prisma.unit.findUnique.mockResolvedValue(null);
+      expect(async () => {
+        await controller.findOne('');
+      }).rejects.toThrowError(NotFoundException);
     });
   });
 

@@ -17,13 +17,24 @@ export class CivService {
   }
 
   async findAll(): Promise<Civ[]> {
-    return await this.prisma.civ.findMany();
+    return await this.prisma.civ.findMany({
+      include: {
+        units: true,
+        techs: true,
+        buildings: true,
+      },
+    });
   }
 
   async findOne(id: number): Promise<Civ | null> {
     return await this.prisma.civ.findUnique({
       where: {
         id,
+      },
+      include: {
+        units: true,
+        techs: true,
+        buildings: true,
       },
     });
   }
