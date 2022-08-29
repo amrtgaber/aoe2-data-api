@@ -82,7 +82,7 @@ export const techs: { techName: string }[] = [
   { techName: 'siege engineers' },
   { techName: 'hoardings' },
   { techName: 'heated shot' },
-  { techName: 'spies/treason' },
+  { techName: 'spies - treason' },
   { techName: 'bloodlines' },
   { techName: 'parthian tactics' },
   { techName: 'thumb ring' },
