@@ -10,7 +10,7 @@ export class PrismaService extends PrismaClient {
         db: {
           url:
             config.get('DATABASE_URL') ||
-            process.env.HEROKU_POSTGRESQL_BROWN_URL,
+            process.env.HEROKU_POSTGRESQL_MAROON_URL,
         },
       },
     });
