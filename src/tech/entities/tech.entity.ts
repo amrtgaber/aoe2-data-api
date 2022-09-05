@@ -9,6 +9,9 @@ export class TechEntity implements Tech {
   techName: string;
 
   @ApiProperty()
+  ageId: number;
+
+  @ApiProperty()
   createdAt: Date;
 
   @ApiProperty()

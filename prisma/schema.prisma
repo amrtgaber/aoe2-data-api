@@ -42,7 +42,11 @@ model Unit {
 
   unitName String @unique
 
-  civs Civ[]
+  age   Age? @relation(fields: [ageId], references: [id])
+  ageId Int?
+
+  civs      Civ[]
+  buildings Building[]
 
   @@map("units")
 }
@@ -54,7 +58,11 @@ model Tech {
 
   techName String @unique
 
-  civs Civ[]
+  age   Age? @relation(fields: [ageId], references: [id])
+  ageId Int?
+
+  civs      Civ[]
+  buildings Building[]
 
   @@map("techs")
 }
@@ -66,7 +74,26 @@ model Building {
 
   buildingName String @unique
 
-  civs Civ[]
+  age   Age? @relation(fields: [ageId], references: [id])
+  ageId Int?
+
+  civs  Civ[]
+  units Unit[]
+  techs Tech[]
 
   @@map("buildings")
+}
+
+model Age {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ageName String @unique
+
+  units     Unit[]
+  techs     Tech[]
+  buildings Building[]
+
+  @@map("ages")
 }

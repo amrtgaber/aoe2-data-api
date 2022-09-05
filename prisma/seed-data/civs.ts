@@ -1,4 +1,4 @@
-export const techTree = [
+export const civs: any = [
   {
     civName: 'Aztecs',
     units: [
@@ -657,6 +657,7 @@ export const techTree = [
       { techName: 'caravan' },
       { techName: 'masonry' },
       { techName: 'architecture' },
+      { techName: 'treadmill crane' },
       { techName: 'gold mining' },
       { techName: 'keep' },
       { techName: 'gillnets' },
@@ -1258,6 +1259,7 @@ export const techTree = [
       { techName: 'faith' },
       { techName: 'chemistry' },
       { techName: 'caravan' },
+      { techName: 'treadmill crane' },
       { techName: 'gold mining' },
       { techName: 'keep' },
       { techName: 'bombard tower' },
@@ -1793,6 +1795,7 @@ export const techTree = [
       { unitName: 'trade cog' },
       { unitName: 'war galley' },
       { unitName: 'crossbowman' },
+      { unitName: 'bombard cannon' },
       { unitName: 'militia' },
       { unitName: 'man-at-arms' },
       { unitName: 'long swordsman' },
@@ -2537,7 +2540,6 @@ export const techTree = [
       { unitName: 'heavy camel rider' },
       { unitName: 'trebuchet' },
       { unitName: 'pikeman' },
-      { unitName: 'halberdier' },
       { unitName: 'cannon galleon' },
       { unitName: 'petard' },
       { unitName: 'hussar' },
@@ -3905,6 +3907,7 @@ export const techTree = [
       { techName: 'chemistry' },
       { techName: 'caravan' },
       { techName: 'masonry' },
+      { techName: 'treadmill crane' },
       { techName: 'gold mining' },
       { techName: 'keep' },
       { techName: 'bombard tower' },
@@ -5104,7 +5107,6 @@ export const techTree = [
       { techName: 'chemistry' },
       { techName: 'caravan' },
       { techName: 'masonry' },
-      { techName: 'treadmill crane' },
       { techName: 'gold mining' },
       { techName: 'gillnets' },
       { techName: 'forging' },
@@ -5700,7 +5702,6 @@ export const techTree = [
       { techName: 'chemistry' },
       { techName: 'caravan' },
       { techName: 'masonry' },
-      { techName: 'treadmill crane' },
       { techName: 'gold mining' },
       { techName: 'keep' },
       { techName: 'bombard tower' },
