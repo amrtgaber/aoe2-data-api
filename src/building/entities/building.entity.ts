@@ -9,6 +9,9 @@ export class BuildingEntity implements Building {
   buildingName: string;
 
   @ApiProperty()
+  ageId: number;
+
+  @ApiProperty()
   createdAt: Date;
 
   @ApiProperty()

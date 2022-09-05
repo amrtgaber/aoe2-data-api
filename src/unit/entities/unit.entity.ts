@@ -9,6 +9,9 @@ export class UnitEntity implements Unit {
   unitName: string;
 
   @ApiProperty()
+  ageId: number;
+
+  @ApiProperty()
   createdAt: Date;
 
   @ApiProperty()

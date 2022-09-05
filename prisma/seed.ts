@@ -1,26 +1,43 @@
 import { PrismaClient } from '@prisma/client';
-import { techTree } from './seed-data/tech-tree';
+import { civs } from './seed-data/civs';
 import { units } from './seed-data/units';
 import { techs } from './seed-data/techs';
 import { buildings } from './seed-data/buildings';
+import { ages } from './seed-data/ages';
 
 const prisma = new PrismaClient();
 
 async function main() {
+  await addAges();
   await addUnits();
   await addTechs();
   await addBuildings();
-  await addTechTrees();
+  await addCivs();
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
+  .then(async () => {
     await prisma.$disconnect();
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
   });
+
+async function addAges() {
+  await prisma.age.deleteMany();
+
+  ages.forEach(async (age) => {
+    await prisma.age.upsert({
+      where: {
+        ageName: age.ageName,
+      },
+      update: {},
+      create: { ageName: age.ageName },
+    });
+  });
+}
 
 async function addUnits() {
   await prisma.unit.deleteMany();
@@ -31,7 +48,20 @@ async function addUnits() {
         unitName: unit.unitName,
       },
       update: {},
-      create: unit,
+      create: { unitName: unit.unitName },
+    });
+
+    await prisma.age.update({
+      where: {
+        ageName: unit.age,
+      },
+      data: {
+        units: {
+          connect: {
+            unitName: unit.unitName,
+          },
+        },
+      },
     });
   });
 }
@@ -45,7 +75,20 @@ async function addTechs() {
         techName: tech.techName,
       },
       update: {},
-      create: tech,
+      create: { techName: tech.techName },
+    });
+
+    await prisma.age.update({
+      where: {
+        ageName: tech.age,
+      },
+      data: {
+        techs: {
+          connect: {
+            techName: tech.techName,
+          },
+        },
+      },
     });
   });
 }
@@ -59,27 +102,13 @@ async function addBuildings() {
         buildingName: building.buildingName,
       },
       update: {},
-      create: building,
-    });
-  });
-}
-
-async function addTechTrees() {
-  await prisma.civ.deleteMany();
-
-  techTree.forEach(async (techTree) => {
-    await prisma.civ.upsert({
-      where: {
-        civName: techTree.civName,
-      },
-      update: {},
-      create: { civName: techTree.civName },
+      create: { buildingName: building.buildingName },
     });
 
-    techTree.units.forEach(async (unit) => {
-      await prisma.civ.update({
+    building.units.forEach(async (unit) => {
+      await prisma.building.update({
         where: {
-          civName: techTree.civName,
+          buildingName: building.buildingName,
         },
         data: {
           units: {
@@ -91,10 +120,10 @@ async function addTechTrees() {
       });
     });
 
-    techTree.techs.forEach(async (tech) => {
-      await prisma.civ.update({
+    building.techs.forEach(async (tech) => {
+      await prisma.building.update({
         where: {
-          civName: techTree.civName,
+          buildingName: building.buildingName,
         },
         data: {
           techs: {
@@ -106,10 +135,67 @@ async function addTechTrees() {
       });
     });
 
-    techTree.buildings.forEach(async (building) => {
+    await prisma.age.update({
+      where: {
+        ageName: building.age,
+      },
+      data: {
+        buildings: {
+          connect: {
+            buildingName: building.buildingName,
+          },
+        },
+      },
+    });
+  });
+}
+
+async function addCivs() {
+  await prisma.civ.deleteMany();
+
+  civs.forEach(async (civ) => {
+    await prisma.civ.upsert({
+      where: {
+        civName: civ.civName,
+      },
+      update: {},
+      create: { civName: civ.civName },
+    });
+
+    civ.units.forEach(async (unit) => {
       await prisma.civ.update({
         where: {
-          civName: techTree.civName,
+          civName: civ.civName,
+        },
+        data: {
+          units: {
+            connect: {
+              unitName: unit.unitName,
+            },
+          },
+        },
+      });
+    });
+
+    civ.techs.forEach(async (tech) => {
+      await prisma.civ.update({
+        where: {
+          civName: civ.civName,
+        },
+        data: {
+          techs: {
+            connect: {
+              techName: tech.techName,
+            },
+          },
+        },
+      });
+    });
+
+    civ.buildings.forEach(async (building) => {
+      await prisma.civ.update({
+        where: {
+          civName: civ.civName,
         },
         data: {
           buildings: {
