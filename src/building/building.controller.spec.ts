@@ -2,24 +2,24 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Building } from '@prisma/client';
 import { NotFoundException } from '@nestjs/common';
 
-import {
-  Context,
-  createMockContext,
-  MockContext,
-} from '../../test/prisma.mock-context';
+import { createMockContext, MockContext } from '../../test/prisma.mock-context';
 import { PrismaService } from '../prisma/prisma.service';
 import { BuildingController } from './building.controller';
 import { BuildingService } from './building.service';
+import { BuildingFindOptionsDto } from './dto/building-find-options.dto';
 
 describe('BuildingController', () => {
   let controller: BuildingController;
-
   let mockCtx: MockContext;
-  let ctx: Context;
+
+  const buildingFindOptionsDto = new BuildingFindOptionsDto();
+  buildingFindOptionsDto.includeAge = false;
+  buildingFindOptionsDto.includeCivs = false;
+  buildingFindOptionsDto.includeUnits = false;
+  buildingFindOptionsDto.includeTechs = false;
 
   beforeEach(async () => {
     mockCtx = createMockContext();
-    ctx = mockCtx as unknown as Context;
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [BuildingController],
@@ -40,16 +40,14 @@ describe('BuildingController', () => {
     it('should find all buildings', async () => {
       const testBuilding1: Building = {
         id: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        buildingName: 'archer',
+        buildingName: 'house',
+        ageId: 1,
       };
 
       const testBuilding2: Building = {
-        id: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        buildingName: 'skirmisher',
+        id: 2,
+        buildingName: 'mill',
+        ageId: 1,
       };
 
       mockCtx.prisma.building.findMany.mockResolvedValue([
@@ -57,34 +55,62 @@ describe('BuildingController', () => {
         testBuilding2,
       ]);
 
-      const buildings: Building[] = await controller.findAll();
+      const buildings: Building[] = await controller.findAll(
+        buildingFindOptionsDto,
+      );
 
       expect(buildings).toHaveLength(2);
     });
   });
 
-  describe('findOne()', () => {
+  describe('findOneById()', () => {
     it('should find a building', async () => {
       const testBuilding: Building = {
         id: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        buildingName: 'archer',
+        buildingName: 'house',
+        ageId: 1,
       };
 
       mockCtx.prisma.building.findUnique.mockResolvedValue(testBuilding);
 
-      const building: Building | null = await controller.findOne(
-        testBuilding.id.toString(),
+      const building: Building | null = await controller.findOneById(
+        testBuilding.id,
+        buildingFindOptionsDto,
       );
 
-      expect(building!.buildingName).toBe('archer');
+      expect(building!.buildingName).toBe('house');
     });
 
     it('should return not found', async () => {
       mockCtx.prisma.building.findUnique.mockResolvedValue(null);
       expect(async () => {
-        await controller.findOne('');
+        await controller.findOneById(0, buildingFindOptionsDto);
+      }).rejects.toThrowError(NotFoundException);
+    });
+  });
+
+  describe('findOneByName()', () => {
+    it('should find a building', async () => {
+      const testBuilding: Building = {
+        id: 1,
+        buildingName: 'house',
+        ageId: 1,
+      };
+
+      mockCtx.prisma.building.findUnique.mockResolvedValue(testBuilding);
+
+      const building: Building | null = await controller.findOneByName(
+        testBuilding.buildingName,
+        buildingFindOptionsDto,
+      );
+
+      expect(building!.buildingName).toBe('house');
+    });
+
+    it('should return not found', async () => {
+      mockCtx.prisma.building.findUnique.mockResolvedValue(null);
+      expect(async () => {
+        await controller.findOneByName('', buildingFindOptionsDto);
       }).rejects.toThrowError(NotFoundException);
     });
   });

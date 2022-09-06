@@ -20,10 +20,37 @@ describe('PrismaService', () => {
   describe('cleanDb()', () => {
     it('should clean the database', async () => {
       try {
-        await service.user.create({
+        await service.age.create({
           data: {
-            email: 'test@test.com',
-            hash: '111',
+            id: 1,
+            ageName: 'dark age',
+          },
+        });
+      } catch {} // ignore unique constraint failure
+
+      try {
+        await service.unit.create({
+          data: {
+            unitName: 'villager',
+            ageId: 1,
+          },
+        });
+      } catch {} // ignore unique constraint failure
+
+      try {
+        await service.tech.create({
+          data: {
+            techName: 'loom',
+            ageId: 1,
+          },
+        });
+      } catch {} // ignore unique constraint failure
+
+      try {
+        await service.building.create({
+          data: {
+            buildingName: 'house',
+            ageId: 1,
           },
         });
       } catch {} // ignore unique constraint failure
@@ -36,12 +63,18 @@ describe('PrismaService', () => {
         });
       } catch {} // ignore unique constraint failure
 
-      expect(await service.user.findMany()).toHaveLength(1);
+      expect(await service.age.findMany()).toHaveLength(1);
+      expect(await service.unit.findMany()).toHaveLength(1);
+      expect(await service.tech.findMany()).toHaveLength(1);
+      expect(await service.building.findMany()).toHaveLength(1);
       expect(await service.civ.findMany()).toHaveLength(1);
 
       await service.cleanDb();
 
-      expect(await service.user.findMany()).toHaveLength(0);
+      expect(await service.age.findMany()).toHaveLength(0);
+      expect(await service.unit.findMany()).toHaveLength(0);
+      expect(await service.tech.findMany()).toHaveLength(0);
+      expect(await service.building.findMany()).toHaveLength(0);
       expect(await service.civ.findMany()).toHaveLength(0);
     });
   });

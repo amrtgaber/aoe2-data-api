@@ -32,7 +32,7 @@ export class TechController {
   @ApiNotFoundResponse()
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
-  async findOne(
+  async findOneById(
     @Param('id') id: number,
     @Query() techFindOptions: TechFindOptionsDto,
   ): Promise<TechEntity> {
