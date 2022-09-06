@@ -1,16 +1,16 @@
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Tech } from '@prisma/client';
+import { Age } from '@prisma/client';
 import {
   Context,
   createMockContext,
   MockContext,
 } from '../../test/prisma.mock-context';
 import { PrismaService } from '../prisma/prisma.service';
-import { TechService } from './tech.service';
+import { AgeService } from './age.service';
 
-describe('TechService', () => {
-  let service: TechService;
+describe('AgeService', () => {
+  let service: AgeService;
 
   let mockCtx: MockContext;
   let ctx: Context;
@@ -21,13 +21,13 @@ describe('TechService', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        TechService,
+        AgeService,
         { provide: PrismaService, useValue: mockCtx.prisma },
         ConfigService,
       ],
     }).compile();
 
-    service = module.get<TechService>(TechService);
+    service = module.get<AgeService>(AgeService);
   });
 
   it('should be defined', () => {
@@ -35,41 +35,41 @@ describe('TechService', () => {
   });
 
   describe('findAll()', () => {
-    it('should find all techs', async () => {
-      const testTech1: Tech = {
+    it('should find all ages', async () => {
+      const testAge1: Age = {
         id: 1,
         createdAt: new Date(),
         updatedAt: new Date(),
-        techName: 'archer',
+        ageName: 'archer',
       };
 
-      const testTech2: Tech = {
+      const testAge2: Age = {
         id: 1,
         createdAt: new Date(),
         updatedAt: new Date(),
-        techName: 'skirmisher',
+        ageName: 'skirmisher',
       };
 
-      mockCtx.prisma.tech.findMany.mockResolvedValue([testTech1, testTech2]);
+      mockCtx.prisma.age.findMany.mockResolvedValue([testAge1, testAge2]);
 
       expect(service.findAll()).resolves.toHaveLength(2);
     });
   });
 
-  describe('findOne()', () => {
-    it('should find a tech', async () => {
-      const testTech: Tech = {
+  describe('findOneById()', () => {
+    it('should find a age', async () => {
+      const testAge: Age = {
         id: 1,
         createdAt: new Date(),
         updatedAt: new Date(),
-        techName: 'archer',
+        ageName: 'archer',
       };
 
-      mockCtx.prisma.tech.findUnique.mockResolvedValue(testTech);
+      mockCtx.prisma.age.findUnique.mockResolvedValue(testAge);
 
-      const tech: Tech | null = await service.findOne(testTech.id);
+      const age: Age | null = await service.findOneById(testAge.id);
 
-      expect(tech!.techName).toBe('archer');
+      expect(age!.ageName).toBe('archer');
     });
   });
 });

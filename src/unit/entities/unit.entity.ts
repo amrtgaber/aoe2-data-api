@@ -1,5 +1,6 @@
 import { Unit } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 
 export class UnitEntity implements Unit {
   @ApiProperty()
@@ -9,11 +10,19 @@ export class UnitEntity implements Unit {
   unitName: string;
 
   @ApiProperty()
+  @Exclude()
   ageId: number;
 
   @ApiProperty()
-  createdAt: Date;
+  ages: [];
 
   @ApiProperty()
-  updatedAt: Date;
+  civs: [];
+
+  @ApiProperty()
+  buildings: [];
+
+  constructor(partial: Partial<UnitEntity>) {
+    Object.assign(this, partial);
+  }
 }

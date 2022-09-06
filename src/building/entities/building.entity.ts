@@ -1,5 +1,6 @@
 import { Building } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 
 export class BuildingEntity implements Building {
   @ApiProperty()
@@ -9,11 +10,22 @@ export class BuildingEntity implements Building {
   buildingName: string;
 
   @ApiProperty()
+  @Exclude()
   ageId: number;
 
   @ApiProperty()
-  createdAt: Date;
+  ages: [];
 
   @ApiProperty()
-  updatedAt: Date;
+  civs: [];
+
+  @ApiProperty()
+  units: [];
+
+  @ApiProperty()
+  techs: [];
+
+  constructor(partial: Partial<BuildingEntity>) {
+    Object.assign(this, partial);
+  }
 }

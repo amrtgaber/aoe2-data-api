@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Age } from '@prisma/client';
 import { NotFoundException } from '@nestjs/common';
-import { Tech } from '@prisma/client';
 
 import {
   Context,
@@ -8,11 +8,11 @@ import {
   MockContext,
 } from '../../test/prisma.mock-context';
 import { PrismaService } from '../prisma/prisma.service';
-import { TechController } from './tech.controller';
-import { TechService } from './tech.service';
+import { AgeController } from './age.controller';
+import { AgeService } from './age.service';
 
-describe('TechController', () => {
-  let controller: TechController;
+describe('AgeController', () => {
+  let controller: AgeController;
 
   let mockCtx: MockContext;
   let ctx: Context;
@@ -22,14 +22,14 @@ describe('TechController', () => {
     ctx = mockCtx as unknown as Context;
 
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [TechController],
+      controllers: [AgeController],
       providers: [
-        TechService,
+        AgeService,
         { provide: PrismaService, useValue: mockCtx.prisma },
       ],
     }).compile();
 
-    controller = module.get<TechController>(TechController);
+    controller = module.get<AgeController>(AgeController);
   });
 
   it('should be defined', () => {
@@ -37,51 +37,51 @@ describe('TechController', () => {
   });
 
   describe('findAll()', () => {
-    it('should find all techs', async () => {
-      const testTech1: Tech = {
+    it('should find all ages', async () => {
+      const testAge1: Age = {
         id: 1,
         createdAt: new Date(),
         updatedAt: new Date(),
-        techName: 'archer',
+        ageName: 'archer',
       };
 
-      const testTech2: Tech = {
+      const testAge2: Age = {
         id: 1,
         createdAt: new Date(),
         updatedAt: new Date(),
-        techName: 'skirmisher',
+        ageName: 'skirmisher',
       };
 
-      mockCtx.prisma.tech.findMany.mockResolvedValue([testTech1, testTech2]);
+      mockCtx.prisma.age.findMany.mockResolvedValue([testAge1, testAge2]);
 
-      const techs: Tech[] = await controller.findAll();
+      const ages: Age[] = await controller.findAll();
 
-      expect(techs).toHaveLength(2);
+      expect(ages).toHaveLength(2);
     });
   });
 
-  describe('findOne()', () => {
-    it('should find a tech', async () => {
-      const testTech: Tech = {
+  describe('findOneById()', () => {
+    it('should find a age', async () => {
+      const testAge: Age = {
         id: 1,
         createdAt: new Date(),
         updatedAt: new Date(),
-        techName: 'archer',
+        ageName: 'archer',
       };
 
-      mockCtx.prisma.tech.findUnique.mockResolvedValue(testTech);
+      mockCtx.prisma.age.findUnique.mockResolvedValue(testAge);
 
-      const tech: Tech | null = await controller.findOne(
-        testTech.id.toString(),
+      const age: Age | null = await controller.findOneById(
+        testAge.id.toString(),
       );
 
-      expect(tech!.techName).toBe('archer');
+      expect(age!.ageName).toBe('archer');
     });
 
     it('should return not found', async () => {
-      mockCtx.prisma.unit.findUnique.mockResolvedValue(null);
+      mockCtx.prisma.age.findUnique.mockResolvedValue(null);
       expect(async () => {
-        await controller.findOne('');
+        await controller.findOneById('');
       }).rejects.toThrowError(NotFoundException);
     });
   });

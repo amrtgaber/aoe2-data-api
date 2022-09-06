@@ -10,21 +10,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  email String @unique
-  hash  String
-
-  @@map("users")
-}
-
 model Civ {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id Int @id @default(autoincrement())
 
   civName String @unique
 
@@ -36,14 +23,12 @@ model Civ {
 }
 
 model Unit {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id Int @id @default(autoincrement())
 
   unitName String @unique
 
-  age   Age? @relation(fields: [ageId], references: [id])
-  ageId Int?
+  age   Age @relation(fields: [ageId], references: [id])
+  ageId Int
 
   civs      Civ[]
   buildings Building[]
@@ -52,14 +37,12 @@ model Unit {
 }
 
 model Tech {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id Int @id @default(autoincrement())
 
   techName String @unique
 
-  age   Age? @relation(fields: [ageId], references: [id])
-  ageId Int?
+  age   Age @relation(fields: [ageId], references: [id])
+  ageId Int
 
   civs      Civ[]
   buildings Building[]
@@ -68,14 +51,12 @@ model Tech {
 }
 
 model Building {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id Int @id @default(autoincrement())
 
   buildingName String @unique
 
-  age   Age? @relation(fields: [ageId], references: [id])
-  ageId Int?
+  age   Age @relation(fields: [ageId], references: [id])
+  ageId Int
 
   civs  Civ[]
   units Unit[]
@@ -85,9 +66,7 @@ model Building {
 }
 
 model Age {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id Int @id @default(autoincrement())
 
   ageName String @unique
 

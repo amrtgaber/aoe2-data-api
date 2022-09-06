@@ -1,12 +1,12 @@
-import { Civ } from '@prisma/client';
+import { Age } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CivEntity implements Civ {
+export class AgeEntity implements Age {
   @ApiProperty()
   id: number;
 
   @ApiProperty()
-  civName: string;
+  ageName: string;
 
   @ApiProperty()
   units: [];
@@ -17,7 +17,7 @@ export class CivEntity implements Civ {
   @ApiProperty()
   buildings: [];
 
-  constructor(partial: Partial<CivEntity>) {
+  constructor(partial: Partial<AgeEntity>) {
     Object.assign(this, partial);
   }
 }

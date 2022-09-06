@@ -10,8 +10,6 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { CivController } from './civ.controller';
 import { CivService } from './civ.service';
-import { CreateCivDto } from './dto/create-civ.dto';
-import { UpdateCivDto } from './dto/update-civ.dto';
 
 describe('CivController', () => {
   let controller: CivController;
@@ -38,27 +36,6 @@ describe('CivController', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('create()', () => {
-    it('should create', async () => {
-      const createCivDto: CreateCivDto = {
-        civName: 'Aztecs',
-      };
-
-      const testCiv: Civ = {
-        id: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        civName: 'Aztecs',
-      };
-
-      mockCtx.prisma.civ.create.mockResolvedValue(testCiv);
-
-      const civ: Civ = await controller.create(createCivDto);
-
-      expect(civ.civName).toBe('Aztecs');
-    });
-  });
-
   describe('findAll()', () => {
     it('should find all civs', async () => {
       const testCiv1: Civ = {
@@ -83,7 +60,7 @@ describe('CivController', () => {
     });
   });
 
-  describe('findOne()', () => {
+  describe('findOneByID()', () => {
     it('should find a civ', async () => {
       const testCiv: Civ = {
         id: 1,
@@ -94,7 +71,9 @@ describe('CivController', () => {
 
       mockCtx.prisma.civ.findUnique.mockResolvedValue(testCiv);
 
-      const civ: Civ | null = await controller.findOne(testCiv.id.toString());
+      const civ: Civ | null = await controller.findOneById(
+        testCiv.id.toString(),
+      );
 
       expect(civ!.civName).toBe('Aztecs');
     });
@@ -102,49 +81,8 @@ describe('CivController', () => {
     it('should return not found', async () => {
       mockCtx.prisma.unit.findUnique.mockResolvedValue(null);
       expect(async () => {
-        await controller.findOne('');
+        await controller.findOneById('');
       }).rejects.toThrowError(NotFoundException);
-    });
-  });
-
-  describe('update()', () => {
-    it('should update a civ', async () => {
-      const testCiv: Civ = {
-        id: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        civName: 'Aztecs',
-      };
-
-      const updateCivDto: UpdateCivDto = {
-        civName: 'ignored in this test due to mock',
-      };
-
-      mockCtx.prisma.civ.update.mockResolvedValue(testCiv);
-
-      const civ: Civ = await controller.update(
-        testCiv.id.toString(),
-        updateCivDto,
-      );
-
-      expect(civ!.civName).toBe('Aztecs');
-    });
-  });
-
-  describe('remove()', () => {
-    it('should remove a civ', async () => {
-      const testCiv: Civ = {
-        id: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        civName: 'Aztecs',
-      };
-
-      mockCtx.prisma.civ.delete;
-
-      await controller.remove(testCiv.id.toString());
-
-      expect(mockCtx.prisma.civ.delete).toHaveBeenCalled();
     });
   });
 });

@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { Civ } from '@prisma/client';
+import { Age } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { CivFindOptionsDto } from './dto/civ-find-options.dto';
+import { AgeFindOptionsDto } from './dto/age-find-options.dto';
 
 @Injectable()
-export class CivService {
+export class AgeService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(options: CivFindOptionsDto): Promise<Civ[]> {
+  async findAll(options: AgeFindOptionsDto): Promise<Age[]> {
     const { includeUnits, includeTechs, includeBuildings } = options;
 
-    return await this.prisma.civ.findMany({
+    return await this.prisma.age.findMany({
       include: {
         units: includeUnits,
         techs: includeTechs,
@@ -21,11 +21,11 @@ export class CivService {
 
   async findOneById(
     id: number,
-    options: CivFindOptionsDto,
-  ): Promise<Civ | null> {
+    options: AgeFindOptionsDto,
+  ): Promise<Age | null> {
     const { includeUnits, includeTechs, includeBuildings } = options;
 
-    return await this.prisma.civ.findUnique({
+    return await this.prisma.age.findUnique({
       where: {
         id,
       },
@@ -39,13 +39,13 @@ export class CivService {
 
   async findOneByName(
     name: string,
-    options: CivFindOptionsDto,
-  ): Promise<Civ | null> {
+    options: AgeFindOptionsDto,
+  ): Promise<Age | null> {
     const { includeUnits, includeTechs, includeBuildings } = options;
 
-    return await this.prisma.civ.findUnique({
+    return await this.prisma.age.findUnique({
       where: {
-        civName: name,
+        ageName: name,
       },
       include: {
         units: includeUnits,
