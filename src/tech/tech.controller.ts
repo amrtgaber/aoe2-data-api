@@ -1,74 +1,64 @@
 import {
   Controller,
   Get,
-  Post,
-  Body,
-  Patch,
   Param,
-  Delete,
-  UseGuards,
-  HttpCode,
-  HttpStatus,
   NotFoundException,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+  Query,
 } from '@nestjs/common';
-import {
-  ApiCreatedResponse,
-  ApiNotFoundResponse,
-  ApiOkResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { Tech } from '@prisma/client';
+import { ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
-import { JwtGuard } from '../auth/guard/jwt.guard';
-import { TechService } from './tech.service';
-import { CreateTechDto } from './dto/create-tech.dto';
-import { UpdateTechDto } from './dto/update-tech.dto';
 import { TechEntity } from './entities/tech.entity';
+import { TechService } from './tech.service';
+import { TechFindOptionsDto } from './dto/tech-find-options.dto';
 
 @ApiTags('Techs')
 @Controller('techs')
 export class TechController {
   constructor(private readonly techService: TechService) {}
 
-  @ApiCreatedResponse({ type: TechEntity })
-  @UseGuards(JwtGuard)
-  @Post()
-  create(@Body() createTechDto: CreateTechDto): Promise<Tech> {
-    return this.techService.create(createTechDto);
-  }
-
   @ApiOkResponse({ type: [TechEntity] })
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  findAll(): Promise<Tech[]> {
-    return this.techService.findAll();
+  async findAll(
+    @Query() techFindOptions: TechFindOptionsDto,
+  ): Promise<TechEntity[]> {
+    const techs = await this.techService.findAll(techFindOptions);
+    return techs.map((tech) => new TechEntity(tech));
   }
 
   @ApiOkResponse({ type: TechEntity })
   @ApiNotFoundResponse()
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Tech> {
-    const tech = await this.techService.findOne(+id);
+  async findOne(
+    @Param('id') id: number,
+    @Query() techFindOptions: TechFindOptionsDto,
+  ): Promise<TechEntity> {
+    const tech = await this.techService.findOneById(id, techFindOptions);
 
     if (!tech) {
-      throw new NotFoundException('Tech id not found');
+      throw new NotFoundException(`Tech id ${id} not found`);
     }
 
-    return tech;
+    return new TechEntity(tech);
   }
 
-  @UseGuards(JwtGuard)
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateTechDto: UpdateTechDto,
-  ): Promise<Tech> {
-    return this.techService.update(+id, updateTechDto);
-  }
+  @ApiOkResponse({ type: TechEntity })
+  @ApiNotFoundResponse()
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Get('/byName/:name')
+  async findOneByName(
+    @Param('name') name: string,
+    @Query() techFindOptions: TechFindOptionsDto,
+  ): Promise<TechEntity> {
+    const tech = await this.techService.findOneByName(name, techFindOptions);
 
-  @UseGuards(JwtGuard)
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.techService.remove(+id);
+    if (!tech) {
+      throw new NotFoundException(`Tech name ${name} not found`);
+    }
+
+    return new TechEntity(tech);
   }
 }

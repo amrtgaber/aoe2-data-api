@@ -10,13 +10,14 @@ async function bootstrap() {
     cors: true,
   });
 
-  configureSwagger(app);
-
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
+      transform: true,
     }),
   );
+
+  configureSwagger(app);
 
   await app.listen(process.env.PORT || 4000);
 }

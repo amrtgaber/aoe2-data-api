@@ -1,55 +1,56 @@
 import { Injectable } from '@nestjs/common';
 import { Unit } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateUnitDto } from './dto/create-unit.dto';
-import { UpdateUnitDto } from './dto/update-unit.dto';
+import { UnitFindOptionsDto } from './dto/unit-find-options.dto';
 
 @Injectable()
 export class UnitService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createUnitDto: CreateUnitDto): Promise<Unit> {
-    return await this.prisma.unit.create({
-      data: {
-        ...createUnitDto,
-      },
-    });
-  }
+  async findAll(options: UnitFindOptionsDto): Promise<Unit[]> {
+    const { includeAge, includeCivs, includeBuildings } = options;
 
-  async findAll(): Promise<Unit[]> {
     return await this.prisma.unit.findMany({
       include: {
-        civs: true,
+        age: includeAge,
+        civs: includeCivs,
+        buildings: includeBuildings,
       },
     });
   }
 
-  async findOne(id: number): Promise<Unit | null> {
+  async findOneById(
+    id: number,
+    options: UnitFindOptionsDto,
+  ): Promise<Unit | null> {
+    const { includeAge, includeCivs, includeBuildings } = options;
+
     return await this.prisma.unit.findUnique({
       where: {
         id,
       },
       include: {
-        civs: true,
+        age: includeAge,
+        civs: includeCivs,
+        buildings: includeBuildings,
       },
     });
   }
 
-  async update(id: number, updateUnitDto: UpdateUnitDto): Promise<Unit> {
-    return await this.prisma.unit.update({
-      where: {
-        id,
-      },
-      data: {
-        ...updateUnitDto,
-      },
-    });
-  }
+  async findOneByName(
+    name: string,
+    options: UnitFindOptionsDto,
+  ): Promise<Unit | null> {
+    const { includeAge, includeCivs, includeBuildings } = options;
 
-  async remove(id: number) {
-    await this.prisma.unit.delete({
+    return await this.prisma.unit.findUnique({
       where: {
-        id,
+        unitName: name,
+      },
+      include: {
+        age: includeAge,
+        civs: includeCivs,
+        buildings: includeBuildings,
       },
     });
   }

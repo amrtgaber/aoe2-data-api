@@ -1,74 +1,64 @@
 import {
   Controller,
   Get,
-  Post,
-  Body,
-  Patch,
   Param,
-  Delete,
-  UseGuards,
-  HttpCode,
-  HttpStatus,
+  Query,
   NotFoundException,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
-import {
-  ApiCreatedResponse,
-  ApiNotFoundResponse,
-  ApiOkResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { Unit } from '@prisma/client';
+import { ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
-import { JwtGuard } from '../auth/guard/jwt.guard';
-import { UnitService } from './unit.service';
-import { CreateUnitDto } from './dto/create-unit.dto';
-import { UpdateUnitDto } from './dto/update-unit.dto';
 import { UnitEntity } from './entities/unit.entity';
+import { UnitService } from './unit.service';
+import { UnitFindOptionsDto } from './dto/unit-find-options.dto';
 
 @ApiTags('Units')
 @Controller('units')
 export class UnitController {
   constructor(private readonly unitService: UnitService) {}
 
-  @ApiCreatedResponse({ type: UnitEntity })
-  @UseGuards(JwtGuard)
-  @Post()
-  create(@Body() createUnitDto: CreateUnitDto): Promise<Unit> {
-    return this.unitService.create(createUnitDto);
-  }
-
   @ApiOkResponse({ type: [UnitEntity] })
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  findAll(): Promise<Unit[]> {
-    return this.unitService.findAll();
+  async findAll(
+    @Query() unitFindOptions: UnitFindOptionsDto,
+  ): Promise<UnitEntity[]> {
+    const units = await this.unitService.findAll(unitFindOptions);
+    return units.map((unit) => new UnitEntity(unit));
   }
 
   @ApiOkResponse({ type: UnitEntity })
   @ApiNotFoundResponse()
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Unit> {
-    const unit = await this.unitService.findOne(+id);
+  async findOneById(
+    @Param('id') id: number,
+    @Query() unitFindOptions: UnitFindOptionsDto,
+  ): Promise<UnitEntity> {
+    const unit = await this.unitService.findOneById(id, unitFindOptions);
 
     if (!unit) {
-      throw new NotFoundException('Unit id not found');
+      throw new NotFoundException(`Unit id ${id} not found`);
     }
 
-    return unit;
+    return new UnitEntity(unit);
   }
 
-  @UseGuards(JwtGuard)
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateUnitDto: UpdateUnitDto,
-  ): Promise<Unit> {
-    return this.unitService.update(+id, updateUnitDto);
-  }
+  @ApiOkResponse({ type: UnitEntity })
+  @ApiNotFoundResponse()
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Get('/byName/:name')
+  async findOneByName(
+    @Param('name') name: string,
+    @Query() unitFindOptions: UnitFindOptionsDto,
+  ): Promise<UnitEntity> {
+    const unit = await this.unitService.findOneByName(name, unitFindOptions);
 
-  @UseGuards(JwtGuard)
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.unitService.remove(+id);
+    if (!unit) {
+      throw new NotFoundException(`Unit name ${name} not found`);
+    }
+
+    return new UnitEntity(unit);
   }
 }

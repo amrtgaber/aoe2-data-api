@@ -10,8 +10,6 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { BuildingController } from './building.controller';
 import { BuildingService } from './building.service';
-import { CreateBuildingDto } from './dto/create-building.dto';
-import { UpdateBuildingDto } from './dto/update-building.dto';
 
 describe('BuildingController', () => {
   let controller: BuildingController;
@@ -36,27 +34,6 @@ describe('BuildingController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
-  });
-
-  describe('create()', () => {
-    it('should create', async () => {
-      const createBuildingDto: CreateBuildingDto = {
-        buildingName: 'archer',
-      };
-
-      const testBuilding: Building = {
-        id: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        buildingName: 'archer',
-      };
-
-      mockCtx.prisma.building.create.mockResolvedValue(testBuilding);
-
-      const building: Building = await controller.create(createBuildingDto);
-
-      expect(building.buildingName).toBe('archer');
-    });
   });
 
   describe('findAll()', () => {
@@ -109,47 +86,6 @@ describe('BuildingController', () => {
       expect(async () => {
         await controller.findOne('');
       }).rejects.toThrowError(NotFoundException);
-    });
-  });
-
-  describe('update()', () => {
-    it('should update a building', async () => {
-      const testBuilding: Building = {
-        id: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        buildingName: 'archer',
-      };
-
-      const updateBuildingDto: UpdateBuildingDto = {
-        buildingName: 'ignored in this test due to mock',
-      };
-
-      mockCtx.prisma.building.update.mockResolvedValue(testBuilding);
-
-      const building: Building = await controller.update(
-        testBuilding.id.toString(),
-        updateBuildingDto,
-      );
-
-      expect(building!.buildingName).toBe('archer');
-    });
-  });
-
-  describe('remove()', () => {
-    it('should remove a building', async () => {
-      const testBuilding: Building = {
-        id: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        buildingName: 'archer',
-      };
-
-      mockCtx.prisma.building.delete;
-
-      await controller.remove(testBuilding.id.toString());
-
-      expect(mockCtx.prisma.building.delete).toHaveBeenCalled();
     });
   });
 });

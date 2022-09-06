@@ -1,74 +1,64 @@
 import {
   Controller,
   Get,
-  Post,
-  Body,
-  Patch,
   Param,
-  Delete,
-  UseGuards,
-  HttpCode,
-  HttpStatus,
+  Query,
   NotFoundException,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
-import {
-  ApiCreatedResponse,
-  ApiNotFoundResponse,
-  ApiOkResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { Civ } from '@prisma/client';
+import { ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
-import { JwtGuard } from '../auth/guard/jwt.guard';
-import { CivService } from './civ.service';
-import { CreateCivDto } from './dto/create-civ.dto';
-import { UpdateCivDto } from './dto/update-civ.dto';
 import { CivEntity } from './entities/civ.entity';
+import { CivService } from './civ.service';
+import { CivFindOptionsDto } from './dto/civ-find-options.dto';
 
 @ApiTags('Civs')
 @Controller('civs')
 export class CivController {
   constructor(private readonly civService: CivService) {}
 
-  @ApiCreatedResponse({ type: CivEntity })
-  @UseGuards(JwtGuard)
-  @Post()
-  create(@Body() createCivDto: CreateCivDto): Promise<Civ> {
-    return this.civService.create(createCivDto);
-  }
-
   @ApiOkResponse({ type: [CivEntity] })
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  findAll(): Promise<Civ[]> {
-    return this.civService.findAll();
+  async findAll(
+    @Query() civFindOptions: CivFindOptionsDto,
+  ): Promise<CivEntity[]> {
+    const civs = await this.civService.findAll(civFindOptions);
+    return civs.map((civ) => new CivEntity(civ));
   }
 
   @ApiOkResponse({ type: CivEntity })
   @ApiNotFoundResponse()
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Civ> {
-    const civ = await this.civService.findOne(+id);
+  async findOneById(
+    @Param('id') id: number,
+    @Query() civFindOptions: CivFindOptionsDto,
+  ): Promise<CivEntity> {
+    const civ = await this.civService.findOneById(id, civFindOptions);
 
     if (!civ) {
-      throw new NotFoundException('Civ id not found');
+      throw new NotFoundException(`Civ id ${id} not found`);
     }
 
-    return civ;
+    return new CivEntity(civ);
   }
 
-  @UseGuards(JwtGuard)
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateCivDto: UpdateCivDto,
-  ): Promise<Civ> {
-    return this.civService.update(+id, updateCivDto);
-  }
+  @ApiOkResponse({ type: CivEntity })
+  @ApiNotFoundResponse()
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Get('/byName/:name')
+  async findOneByName(
+    @Param('name') name: string,
+    @Query() civFindOptions: CivFindOptionsDto,
+  ): Promise<CivEntity> {
+    const civ = await this.civService.findOneByName(name, civFindOptions);
 
-  @UseGuards(JwtGuard)
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.civService.remove(+id);
+    if (!civ) {
+      throw new NotFoundException(`Civ name ${name} not found`);
+    }
+
+    return new CivEntity(civ);
   }
 }

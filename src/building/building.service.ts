@@ -1,58 +1,59 @@
 import { Injectable } from '@nestjs/common';
 import { Building } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateBuildingDto } from './dto/create-building.dto';
-import { UpdateBuildingDto } from './dto/update-building.dto';
+import { BuildingFindOptionsDto } from './dto/building-find-options.dto';
 
 @Injectable()
 export class BuildingService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createBuildingDto: CreateBuildingDto): Promise<Building> {
-    return await this.prisma.building.create({
-      data: {
-        ...createBuildingDto,
-      },
-    });
-  }
+  async findAll(options: BuildingFindOptionsDto): Promise<Building[]> {
+    const { includeAge, includeCivs, includeUnits, includeTechs } = options;
 
-  async findAll(): Promise<Building[]> {
     return await this.prisma.building.findMany({
       include: {
-        civs: true,
+        age: includeAge,
+        civs: includeCivs,
+        units: includeUnits,
+        techs: includeTechs,
       },
     });
   }
 
-  async findOne(id: number): Promise<Building | null> {
+  async findOneById(
+    id: number,
+    options: BuildingFindOptionsDto,
+  ): Promise<Building | null> {
+    const { includeAge, includeCivs, includeUnits, includeTechs } = options;
+
     return await this.prisma.building.findUnique({
       where: {
         id,
       },
       include: {
-        civs: true,
+        age: includeAge,
+        civs: includeCivs,
+        units: includeUnits,
+        techs: includeTechs,
       },
     });
   }
 
-  async update(
-    id: number,
-    updateBuildingDto: UpdateBuildingDto,
-  ): Promise<Building> {
-    return await this.prisma.building.update({
-      where: {
-        id,
-      },
-      data: {
-        ...updateBuildingDto,
-      },
-    });
-  }
+  async findOneByName(
+    name: string,
+    options: BuildingFindOptionsDto,
+  ): Promise<Building | null> {
+    const { includeAge, includeCivs, includeUnits, includeTechs } = options;
 
-  async remove(id: number) {
-    await this.prisma.building.delete({
+    return await this.prisma.building.findUnique({
       where: {
-        id,
+        buildingName: name,
+      },
+      include: {
+        age: includeAge,
+        civs: includeCivs,
+        units: includeUnits,
+        techs: includeTechs,
       },
     });
   }

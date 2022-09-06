@@ -4,10 +4,29 @@ import { units } from './seed-data/units';
 import { techs } from './seed-data/techs';
 import { buildings } from './seed-data/buildings';
 import { ages } from './seed-data/ages';
+import { clearDatabase } from './clear';
+
+let id = 1000;
+function getUniqueId() {
+  id++;
+  return id;
+}
+
+function getAgeId(ageName: string) {
+  const age = ages.find((age) => age.ageName === ageName);
+
+  if (!age) {
+    throw new Error(`Age ${ageName} not found`);
+  }
+
+  return age.id;
+}
 
 const prisma = new PrismaClient();
 
 async function main() {
+  await clearDatabase();
+
   await addAges();
   await addUnits();
   await addTechs();
@@ -26,83 +45,57 @@ main()
   });
 
 async function addAges() {
-  await prisma.age.deleteMany();
-
   ages.forEach(async (age) => {
+    const { id, ageName } = age;
+
     await prisma.age.upsert({
       where: {
-        ageName: age.ageName,
+        ageName,
       },
       update: {},
-      create: { ageName: age.ageName },
+      create: { id, ageName },
     });
   });
 }
 
 async function addUnits() {
-  await prisma.unit.deleteMany();
-
   units.forEach(async (unit) => {
+    const ageId = getAgeId(unit.age);
+
     await prisma.unit.upsert({
       where: {
         unitName: unit.unitName,
       },
       update: {},
-      create: { unitName: unit.unitName },
-    });
-
-    await prisma.age.update({
-      where: {
-        ageName: unit.age,
-      },
-      data: {
-        units: {
-          connect: {
-            unitName: unit.unitName,
-          },
-        },
-      },
+      create: { id: getUniqueId(), unitName: unit.unitName, ageId },
     });
   });
 }
 
 async function addTechs() {
-  await prisma.tech.deleteMany();
-
   techs.forEach(async (tech) => {
+    const ageId = getAgeId(tech.age);
+
     await prisma.tech.upsert({
       where: {
         techName: tech.techName,
       },
       update: {},
-      create: { techName: tech.techName },
-    });
-
-    await prisma.age.update({
-      where: {
-        ageName: tech.age,
-      },
-      data: {
-        techs: {
-          connect: {
-            techName: tech.techName,
-          },
-        },
-      },
+      create: { id: getUniqueId(), techName: tech.techName, ageId },
     });
   });
 }
 
 async function addBuildings() {
-  await prisma.building.deleteMany();
-
   buildings.forEach(async (building) => {
+    const ageId = getAgeId(building.age);
+
     await prisma.building.upsert({
       where: {
         buildingName: building.buildingName,
       },
       update: {},
-      create: { buildingName: building.buildingName },
+      create: { id: getUniqueId(), buildingName: building.buildingName, ageId },
     });
 
     building.units.forEach(async (unit) => {
@@ -134,32 +127,17 @@ async function addBuildings() {
         },
       });
     });
-
-    await prisma.age.update({
-      where: {
-        ageName: building.age,
-      },
-      data: {
-        buildings: {
-          connect: {
-            buildingName: building.buildingName,
-          },
-        },
-      },
-    });
   });
 }
 
 async function addCivs() {
-  await prisma.civ.deleteMany();
-
   civs.forEach(async (civ) => {
     await prisma.civ.upsert({
       where: {
         civName: civ.civName,
       },
       update: {},
-      create: { civName: civ.civName },
+      create: { id: getUniqueId(), civName: civ.civName },
     });
 
     civ.units.forEach(async (unit) => {

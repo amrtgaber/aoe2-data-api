@@ -8,8 +8,6 @@ import {
 } from '../../test/prisma.mock-context';
 import { PrismaService } from '../prisma/prisma.service';
 import { UnitService } from './unit.service';
-import { CreateUnitDto } from './dto/create-unit.dto';
-import { UpdateUnitDto } from './dto/update-unit.dto';
 
 describe('UnitService', () => {
   let service: UnitService;
@@ -34,27 +32,6 @@ describe('UnitService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
-  });
-
-  describe('create()', () => {
-    it('should create a unit', async () => {
-      const createUnitDto: CreateUnitDto = {
-        unitName: 'archer',
-      };
-
-      const testUnit: Unit = {
-        id: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        unitName: 'archer',
-      };
-
-      mockCtx.prisma.unit.create.mockResolvedValue(testUnit);
-
-      const unit: Unit = await service.create(createUnitDto);
-
-      expect(unit.unitName).toBe('archer');
-    });
   });
 
   describe('findAll()', () => {
@@ -93,44 +70,6 @@ describe('UnitService', () => {
       const unit: Unit | null = await service.findOne(testUnit.id);
 
       expect(unit!.unitName).toBe('archer');
-    });
-  });
-
-  describe('update()', () => {
-    it('should update a unit', async () => {
-      const testUnit: Unit = {
-        id: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        unitName: 'archer',
-      };
-
-      const updateDto: UpdateUnitDto = {
-        unitName: 'ignored in this test due to mock',
-      };
-
-      mockCtx.prisma.unit.update.mockResolvedValue(testUnit);
-
-      const unit: Unit = await service.update(testUnit.id, updateDto);
-
-      expect(unit.unitName).toBe('archer');
-    });
-  });
-
-  describe('remove()', () => {
-    it('should remove a unit', async () => {
-      const testUnit: Unit = {
-        id: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        unitName: 'archer',
-      };
-
-      mockCtx.prisma.unit.delete;
-
-      await service.remove(testUnit.id);
-
-      expect(mockCtx.prisma.unit.delete).toHaveBeenCalled();
     });
   });
 });

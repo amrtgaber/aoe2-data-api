@@ -8,8 +8,6 @@ import {
 } from '../../test/prisma.mock-context';
 import { PrismaService } from '../prisma/prisma.service';
 import { CivService } from './civ.service';
-import { CreateCivDto } from './dto/create-civ.dto';
-import { UpdateCivDto } from './dto/update-civ.dto';
 
 describe('CivService', () => {
   let service: CivService;
@@ -34,27 +32,6 @@ describe('CivService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
-  });
-
-  describe('create()', () => {
-    it('should create a civ', async () => {
-      const createCivDto: CreateCivDto = {
-        civName: 'Aztecs',
-      };
-
-      const testCiv: Civ = {
-        id: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        civName: 'Aztecs',
-      };
-
-      mockCtx.prisma.civ.create.mockResolvedValue(testCiv);
-
-      const civ: Civ = await service.create(createCivDto);
-
-      expect(civ.civName).toBe('Aztecs');
-    });
   });
 
   describe('findAll()', () => {
@@ -93,44 +70,6 @@ describe('CivService', () => {
       const civ: Civ | null = await service.findOne(testCiv.id);
 
       expect(civ!.civName).toBe('Aztecs');
-    });
-  });
-
-  describe('update()', () => {
-    it('should update a civ', async () => {
-      const testCiv: Civ = {
-        id: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        civName: 'Aztecs',
-      };
-
-      const updateDto: UpdateCivDto = {
-        civName: 'ignored in this test due to mock',
-      };
-
-      mockCtx.prisma.civ.update.mockResolvedValue(testCiv);
-
-      const civ: Civ = await service.update(testCiv.id, updateDto);
-
-      expect(civ.civName).toBe('Aztecs');
-    });
-  });
-
-  describe('remove()', () => {
-    it('should remove a civ', async () => {
-      const testCiv: Civ = {
-        id: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        civName: 'Aztecs',
-      };
-
-      mockCtx.prisma.civ.delete;
-
-      await service.remove(testCiv.id);
-
-      expect(mockCtx.prisma.civ.delete).toHaveBeenCalled();
     });
   });
 });
