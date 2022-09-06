@@ -1,23 +1,23 @@
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Civ } from '@prisma/client';
-import {
-  Context,
-  createMockContext,
-  MockContext,
-} from '../../test/prisma.mock-context';
+
+import { createMockContext, MockContext } from '../../test/prisma.mock-context';
 import { PrismaService } from '../prisma/prisma.service';
+import { CivFindOptionsDto } from './dto/civ-find-options.dto';
 import { CivService } from './civ.service';
 
 describe('CivService', () => {
   let service: CivService;
-
   let mockCtx: MockContext;
-  let ctx: Context;
+
+  const civFindOptionsDto = new CivFindOptionsDto();
+  civFindOptionsDto.includeUnits = false;
+  civFindOptionsDto.includeTechs = false;
+  civFindOptionsDto.includeBuildings = false;
 
   beforeEach(async () => {
     mockCtx = createMockContext();
-    ctx = mockCtx as unknown as Context;
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -38,36 +38,51 @@ describe('CivService', () => {
     it('should find all civs', async () => {
       const testCiv1: Civ = {
         id: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
         civName: 'Aztecs',
       };
 
       const testCiv2: Civ = {
-        id: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        id: 2,
         civName: 'Vikings',
       };
 
       mockCtx.prisma.civ.findMany.mockResolvedValue([testCiv1, testCiv2]);
 
-      expect(service.findAll()).resolves.toHaveLength(2);
+      expect(service.findAll(civFindOptionsDto)).resolves.toHaveLength(2);
     });
   });
 
-  describe('findOne()', () => {
+  describe('findOneById()', () => {
     it('should find a civ', async () => {
       const testCiv: Civ = {
         id: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
         civName: 'Aztecs',
       };
 
       mockCtx.prisma.civ.findUnique.mockResolvedValue(testCiv);
 
-      const civ: Civ | null = await service.findOne(testCiv.id);
+      const civ: Civ | null = await service.findOneById(
+        testCiv.id,
+        civFindOptionsDto,
+      );
+
+      expect(civ!.civName).toBe('Aztecs');
+    });
+  });
+
+  describe('findOneByName()', () => {
+    it('should find a civ', async () => {
+      const testCiv: Civ = {
+        id: 1,
+        civName: 'Aztecs',
+      };
+
+      mockCtx.prisma.civ.findUnique.mockResolvedValue(testCiv);
+
+      const civ: Civ | null = await service.findOneByName(
+        testCiv.civName,
+        civFindOptionsDto,
+      );
 
       expect(civ!.civName).toBe('Aztecs');
     });
