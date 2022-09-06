@@ -2,11 +2,18 @@
 
 ## Description
 
-Api for getting the names of all the civs. Will be expanded in future versions. Initially created as a backend api for an AoE2 random civ picker app.
+Api for getting data bout Age of Empires II game civilizations, ages, units, techs, and buildings.
 
 ## Docs
 
-Run the project and navigate to `/docs`.
+Api documentation is hosted at [https://aoe2-data-api.herokuapp.com/docs](https://aoe2-data-api.herokuapp.com/) provided by NestJS and Swagger.
+
+To see the docs during development run the project and navigate to [`localhost:4000/docs`](http://localhost:4000/docs#/).
+
+## Prerequisites
+
+- [node](https://nodejs.org/en/) (preferably through nvm)
+- [docker](https://www.docker.com/) (for dev db only)
 
 ## Installation
 
@@ -32,9 +39,6 @@ $ npm run start:prod
 ```bash
 # unit tests
 $ npm run test
-
-# e2e tests
-$ npm run test:e2e
 
 # test coverage
 $ npm run test:cov
