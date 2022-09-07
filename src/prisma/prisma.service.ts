@@ -23,6 +23,7 @@ export class PrismaService extends PrismaClient {
     await this.building.deleteMany();
     await this.civ.deleteMany();
     await this.age.deleteMany();
+    await this.version.deleteMany();
   }
 
   /* istanbul ignore next */

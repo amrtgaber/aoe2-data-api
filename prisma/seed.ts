@@ -6,13 +6,16 @@ import { buildings } from './seed-data/buildings';
 import { ages } from './seed-data/ages';
 import { clearDatabase } from './clear';
 
+const API_VERSION = '1.0.0';
+const GAME_VERSION = '66692';
+export const VERSION_ID = 1;
+
 let id = 1000;
-function getUniqueId() {
-  id++;
-  return id;
+function getUniqueId(): number {
+  return id++;
 }
 
-function getAgeId(ageName: string) {
+function getAgeId(ageName: string): number {
   const age = ages.find((age) => age.ageName === ageName);
 
   if (!age) {
@@ -32,6 +35,7 @@ async function main() {
   await addTechs();
   await addBuildings();
   await addCivs();
+  await addVersions();
 }
 
 main()
@@ -45,144 +49,93 @@ main()
   });
 
 async function addAges() {
-  ages.forEach(async (age) => {
-    const { id, ageName } = age;
-
-    await prisma.age.upsert({
-      where: {
-        ageName,
-      },
-      update: {},
-      create: { id, ageName },
-    });
+  await prisma.age.createMany({
+    data: ages,
   });
 }
 
 async function addUnits() {
-  units.forEach(async (unit) => {
-    const ageId = getAgeId(unit.age);
+  const unitsData = units.map((unit) => {
+    return {
+      id: getUniqueId(),
+      unitName: unit.unitName,
+      ageId: getAgeId(unit.age),
+    };
+  });
 
-    await prisma.unit.upsert({
-      where: {
-        unitName: unit.unitName,
-      },
-      update: {},
-      create: { id: getUniqueId(), unitName: unit.unitName, ageId },
-    });
+  await prisma.unit.createMany({
+    data: unitsData,
   });
 }
 
 async function addTechs() {
-  techs.forEach(async (tech) => {
-    const ageId = getAgeId(tech.age);
+  const techsData = techs.map((tech) => {
+    return {
+      id: getUniqueId(),
+      techName: tech.techName,
+      ageId: getAgeId(tech.age),
+    };
+  });
 
-    await prisma.tech.upsert({
-      where: {
-        techName: tech.techName,
-      },
-      update: {},
-      create: { id: getUniqueId(), techName: tech.techName, ageId },
-    });
+  await prisma.tech.createMany({
+    data: techsData,
   });
 }
 
 async function addBuildings() {
-  buildings.forEach(async (building) => {
+  await buildings.forEach(async (building) => {
     const ageId = getAgeId(building.age);
 
-    await prisma.building.upsert({
-      where: {
+    await prisma.building.create({
+      data: {
+        id: getUniqueId(),
         buildingName: building.buildingName,
+        ageId,
+        units: {
+          connect: building.units,
+        },
+        techs: {
+          connect: building.techs,
+        },
       },
-      update: {},
-      create: { id: getUniqueId(), buildingName: building.buildingName, ageId },
-    });
-
-    building.units.forEach(async (unit) => {
-      await prisma.building.update({
-        where: {
-          buildingName: building.buildingName,
-        },
-        data: {
-          units: {
-            connect: {
-              unitName: unit.unitName,
-            },
-          },
-        },
-      });
-    });
-
-    building.techs.forEach(async (tech) => {
-      await prisma.building.update({
-        where: {
-          buildingName: building.buildingName,
-        },
-        data: {
-          techs: {
-            connect: {
-              techName: tech.techName,
-            },
-          },
-        },
-      });
     });
   });
 }
 
 async function addCivs() {
-  civs.forEach(async (civ) => {
-    await prisma.civ.upsert({
+  await civs.forEach(async (civ) => {
+    await prisma.civ.create({
+      data: {
+        id: getUniqueId(),
+        civName: civ.civName,
+        units: {
+          connect: civ.units,
+        },
+        techs: {
+          connect: civ.techs,
+        },
+      },
+    });
+
+    await prisma.civ.update({
       where: {
         civName: civ.civName,
       },
-      update: {},
-      create: { id: getUniqueId(), civName: civ.civName },
+      data: {
+        buildings: {
+          connect: civ.buildings,
+        },
+      },
     });
+  });
+}
 
-    civ.units.forEach(async (unit) => {
-      await prisma.civ.update({
-        where: {
-          civName: civ.civName,
-        },
-        data: {
-          units: {
-            connect: {
-              unitName: unit.unitName,
-            },
-          },
-        },
-      });
-    });
-
-    civ.techs.forEach(async (tech) => {
-      await prisma.civ.update({
-        where: {
-          civName: civ.civName,
-        },
-        data: {
-          techs: {
-            connect: {
-              techName: tech.techName,
-            },
-          },
-        },
-      });
-    });
-
-    civ.buildings.forEach(async (building) => {
-      await prisma.civ.update({
-        where: {
-          civName: civ.civName,
-        },
-        data: {
-          buildings: {
-            connect: {
-              buildingName: building.buildingName,
-            },
-          },
-        },
-      });
-    });
+async function addVersions() {
+  await prisma.version.create({
+    data: {
+      id: VERSION_ID,
+      gameVersion: GAME_VERSION,
+      apiVersion: API_VERSION,
+    },
   });
 }

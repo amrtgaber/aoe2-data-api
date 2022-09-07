@@ -42,6 +42,16 @@ CREATE TABLE "ages" (
 );
 
 -- CreateTable
+CREATE TABLE "versions" (
+    "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "gameVersion" TEXT NOT NULL,
+    "apiVersion" TEXT NOT NULL,
+
+    CONSTRAINT "versions_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "_CivToUnit" (
     "A" INTEGER NOT NULL,
     "B" INTEGER NOT NULL

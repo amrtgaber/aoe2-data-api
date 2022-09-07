@@ -8,6 +8,7 @@ export async function clearDatabase() {
   await prisma.building.deleteMany();
   await prisma.civ.deleteMany();
   await prisma.age.deleteMany();
+  await prisma.version.deleteMany();
 }
 
 async function main() {

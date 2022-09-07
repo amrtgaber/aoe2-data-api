@@ -9,6 +9,7 @@ import { BuildingModule } from './building/building.module';
 import { UnitModule } from './unit/unit.module';
 import { TechModule } from './tech/tech.module';
 import { AgeModule } from './age/age.module';
+import { VersionModule } from './version/version.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { AgeModule } from './age/age.module';
     UnitModule,
     TechModule,
     AgeModule,
+    VersionModule,
   ],
 })
 export class AppModule {}

@@ -76,3 +76,13 @@ model Age {
 
   @@map("ages")
 }
+
+model Version {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  gameVersion String
+  apiVersion  String
+
+  @@map("versions")
+}
