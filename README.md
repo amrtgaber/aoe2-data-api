@@ -47,3 +47,7 @@ $ npm run test:cov
 ## License
 
 [MIT licensed](LICENSE).
+
+---
+
+Age of Empires II © Microsoft Corporation. Age of Empires II Data Api was created under Microsoft's "[Game Content Usage Rules](https://www.xbox.com/en-us/developers/rules)" using assets from Age of Empires II and it is not endorsed by or affiliated with Microsoft.
