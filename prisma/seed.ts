@@ -84,6 +84,7 @@ async function addTechs() {
     data: techsData,
   });
 }
+
 function addBuildings() {
   const transactions = [] as any;
 
