@@ -33,8 +33,11 @@ async function main() {
   await addAges();
   await addUnits();
   await addTechs();
-  await addBuildings();
-  await addCivs();
+
+  const buildingTransactions = await addBuildings();
+  const civTransactions = await addCivs();
+  await prisma.$transaction([...buildingTransactions, ...civTransactions]);
+
   await addVersions();
 }
 
@@ -81,53 +84,56 @@ async function addTechs() {
     data: techsData,
   });
 }
+function addBuildings() {
+  const transactions = [] as any;
 
-async function addBuildings() {
-  await buildings.forEach(async (building) => {
+  buildings.forEach(async (building) => {
     const ageId = getAgeId(building.age);
 
-    await prisma.building.create({
-      data: {
-        id: getUniqueId(),
-        buildingName: building.buildingName,
-        ageId,
-        units: {
-          connect: building.units,
+    transactions.push(
+      prisma.building.create({
+        data: {
+          id: getUniqueId(),
+          buildingName: building.buildingName,
+          ageId,
+          units: {
+            connect: building.units,
+          },
+          techs: {
+            connect: building.techs,
+          },
         },
-        techs: {
-          connect: building.techs,
-        },
-      },
-    });
+      }),
+    );
   });
+
+  return transactions;
 }
 
-async function addCivs() {
-  await civs.forEach(async (civ) => {
-    await prisma.civ.create({
-      data: {
-        id: getUniqueId(),
-        civName: civ.civName,
-        units: {
-          connect: civ.units,
-        },
-        techs: {
-          connect: civ.techs,
-        },
-      },
-    });
+function addCivs() {
+  const transactions = [] as any;
 
-    await prisma.civ.update({
-      where: {
-        civName: civ.civName,
-      },
-      data: {
-        buildings: {
-          connect: civ.buildings,
+  civs.forEach(async (civ) => {
+    transactions.push(
+      prisma.civ.create({
+        data: {
+          id: getUniqueId(),
+          civName: civ.civName,
+          units: {
+            connect: civ.units,
+          },
+          techs: {
+            connect: civ.techs,
+          },
+          buildings: {
+            connect: civ.buildings,
+          },
         },
-      },
-    });
+      }),
+    );
   });
+
+  return transactions;
 }
 
 async function addVersions() {
