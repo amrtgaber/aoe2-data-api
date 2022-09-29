@@ -44,6 +44,14 @@ $ npm run test
 $ npm run test:cov
 ```
 
+## Updating database
+
+Seed data is generated through a fork of the aoe2techtree project.
+
+https://github.com/amrtgaber/aoe2techtree
+
+The scripts are in the `data-conversion` folder.
+
 ## License
 
 [MIT licensed](LICENSE).
