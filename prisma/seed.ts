@@ -7,7 +7,7 @@ import { ages } from './seed-data/ages';
 import { clearDatabase } from './clear';
 
 const API_VERSION = '1.0.0';
-const GAME_VERSION = '73855';
+const GAME_VERSION = '75350';
 export const VERSION_ID = 1;
 
 let id = 1000;
