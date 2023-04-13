@@ -52,6 +52,8 @@ https://github.com/amrtgaber/aoe2techtree
 
 The scripts are in the `data-conversion` folder.
 
+After running the scripts successfully, copy the files into `prisma/seed-data` to replace the files with the same names.
+
 ## License
 
 [MIT licensed](LICENSE).
