@@ -23,6 +23,8 @@ $ npm install
 
 ## Running the app
 
+Start the appropriate docker container before running the API. Then run one of the commands below.
+
 ```bash
 # development
 $ npm run start
@@ -53,6 +55,8 @@ https://github.com/amrtgaber/aoe2techtree
 The scripts are in the `data-conversion` folder.
 
 After running the scripts successfully, copy the files into `prisma/seed-data` to replace the files with the same names.
+
+Update the game version in `prisma/seed.ts`.
 
 ## License
 
