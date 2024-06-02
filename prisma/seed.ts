@@ -4,7 +4,7 @@ import { units } from './seed-data/units';
 import { techs } from './seed-data/techs';
 import { buildings } from './seed-data/buildings';
 import { ages } from './seed-data/ages';
-import { clearDatabase } from './clear';
+import { clearStaticData } from './clear';
 
 const API_VERSION = '1.0.0';
 const GAME_VERSION = '107882';
@@ -28,7 +28,7 @@ function getAgeId(ageName: string): number {
 const prisma = new PrismaClient();
 
 async function main() {
-  await clearDatabase();
+  await clearStaticData();
 
   await addAges();
   await addUnits();

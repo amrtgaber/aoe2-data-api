@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export async function clearDatabase() {
+export async function clearStaticData() {
   await prisma.unit.deleteMany();
   await prisma.tech.deleteMany();
   await prisma.building.deleteMany();
@@ -12,7 +12,7 @@ export async function clearDatabase() {
 }
 
 async function main() {
-  await clearDatabase();
+  await clearStaticData();
 }
 
 main()
