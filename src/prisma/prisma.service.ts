@@ -18,6 +18,7 @@ export class PrismaService extends PrismaClient {
   }
 
   async cleanDb() {
+    await this.user.deleteMany();
     await this.unit.deleteMany();
     await this.tech.deleteMany();
     await this.building.deleteMany();
