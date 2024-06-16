@@ -1,26 +1,41 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { User } from '@prisma/client';
+import * as argon from 'argon2';
+import { PrismaService } from '../prisma/prisma.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(private prisma: PrismaService) {}
+
+  async update(user: User, dto: UpdateUserDto) {
+    const data = {
+      ...user,
+      ...dto,
+    };
+
+    delete data.password;
+
+    let hash: string;
+    if (dto.password) {
+      hash = await argon.hash(dto.password);
+      data.hash = hash;
+      console.log({ hash });
+    }
+
+    return await this.prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data,
+    });
   }
 
-  findAll() {
-    return `This action returns all user`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    return await this.prisma.user.delete({
+      where: {
+        id,
+      },
+    });
   }
 }

@@ -44,8 +44,8 @@ describe('App e2e', () => {
 
   const dto: AuthDto = {
     email: 'test@test.com',
-    username: 'test username',
-    password: '123',
+    username: 'testUsername',
+    password: '12345678',
   };
 
   describe('Auth', () => {
@@ -55,6 +55,30 @@ describe('App e2e', () => {
         .post(`/auth/signup`)
         .withBody(dto)
         .expectStatus(HttpStatus.CREATED);
+    });
+
+    it('should throw if password is too short', async () => {
+      await pactum
+        .spec()
+        .post(`/auth/signup`)
+        .withBody({ ...dto, password: '123' })
+        .expectStatus(HttpStatus.BAD_REQUEST);
+    });
+
+    it('should throw if username is too short', async () => {
+      await pactum
+        .spec()
+        .post(`/auth/signup`)
+        .withBody({ ...dto, username: 'a' })
+        .expectStatus(HttpStatus.BAD_REQUEST);
+    });
+
+    it('should throw if username is not valid', async () => {
+      await pactum
+        .spec()
+        .post(`/auth/signup`)
+        .withBody({ ...dto, username: 'abcdefg!%$' })
+        .expectStatus(HttpStatus.BAD_REQUEST);
     });
 
     it('should login', async () => {
@@ -100,11 +124,106 @@ describe('App e2e', () => {
         .spec()
         .get(`/users`)
         .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+        .expectStatus(HttpStatus.OK)
+        .inspect();
+    });
+
+    it('edits user email', async () => {
+      await pactum
+        .spec()
+        .patch(`/users`)
+        .withBody({
+          email: 'test2@test.com',
+        })
+        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
         .expectStatus(HttpStatus.OK);
     });
 
-    it.todo('edits user');
-    it.todo('deletes user');
+    it('edits user password', async () => {
+      await pactum
+        .spec()
+        .patch(`/users`)
+        .withBody({
+          password: 'a different password',
+        })
+        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+        .expectStatus(HttpStatus.OK);
+    });
+
+    it('logs in after email and password changed', async () => {
+      await pactum
+        .spec()
+        .patch(`/users`)
+        .withBody({
+          email: 'test2@test.com',
+          password: 'a different password',
+        })
+        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+        .expectStatus(HttpStatus.OK);
+    });
+
+    it('throws if password is too short', async () => {
+      await pactum
+        .spec()
+        .patch(`/users`)
+        .withBody({
+          password: '123',
+        })
+        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+        .expectStatus(HttpStatus.BAD_REQUEST);
+    });
+
+    it('throws if username is too short', async () => {
+      await pactum
+        .spec()
+        .patch(`/users`)
+        .withBody({
+          username: 'a',
+        })
+        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+        .expectStatus(HttpStatus.BAD_REQUEST);
+    });
+
+    it('throws if username is not valid', async () => {
+      await pactum
+        .spec()
+        .patch(`/users`)
+        .withBody({
+          username: 'abcdefg!%$',
+        })
+        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+        .expectStatus(HttpStatus.BAD_REQUEST);
+    });
+
+    it('edits user username', async () => {
+      await pactum
+        .spec()
+        .patch(`/users`)
+        .withBody({
+          username: 'test2Username',
+        })
+        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+        .expectStatus(HttpStatus.OK);
+    });
+
+    it('throws if username is too short', async () => {
+      await pactum
+        .spec()
+        .patch(`/users`)
+        .withBody({
+          username: 'a',
+        })
+        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+        .expectStatus(HttpStatus.BAD_REQUEST);
+    });
+
+    it('deletes user', async () => {
+      await pactum
+        .spec()
+        .delete(`/users`)
+        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+        .expectStatus(HttpStatus.NO_CONTENT);
+    });
   });
 
   describe('Draft', () => {

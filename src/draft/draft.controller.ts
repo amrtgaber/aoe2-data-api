@@ -50,7 +50,7 @@ export class DraftController {
 
   @ApiNoContentResponse()
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.draftService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return await this.draftService.remove(+id);
   }
 }
