@@ -153,12 +153,11 @@ describe('App e2e', () => {
     it('logs in after email and password changed', async () => {
       await pactum
         .spec()
-        .patch(`/users`)
+        .post(`/auth/login`)
         .withBody({
           email: 'test2@test.com',
           password: 'a different password',
         })
-        .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
         .expectStatus(HttpStatus.OK);
     });
 
