@@ -33,8 +33,9 @@ model Draft {
   desc    String?
   private Boolean @default(true)
 
-  owner   User @relation(fields: [ownerId], references: [id])
+  owner   User  @relation(fields: [ownerId], references: [id])
   ownerId Int
+  civs    Civ[]
 
   @@map("drafts")
 }
@@ -47,6 +48,7 @@ model Civ {
   units     Unit[]
   techs     Tech[]
   buildings Building[]
+  drafts    Draft[]
 
   @@map("civs")
 }
