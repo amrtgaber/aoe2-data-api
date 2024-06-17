@@ -4,12 +4,22 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiNoContentResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { GetUser } from '../auth/decorator/get-user.decorator';
+import { JwtGuard } from '../auth/guard/jwt.guard';
 import { DraftService } from './draft.service';
 import { CreateDraftDto } from './dto/create-draft.dto';
 import { UpdateDraftDto } from './dto/update-draft.dto';
@@ -20,37 +30,46 @@ import { DraftEntity } from './entities/draft.entity';
 export class DraftController {
   constructor(private readonly draftService: DraftService) {}
 
-  @ApiOkResponse({ type: DraftEntity })
+  @ApiCreatedResponse({ type: DraftEntity })
+  @UseGuards(JwtGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()
-  create(@Body() createDraftDto: CreateDraftDto) {
-    return this.draftService.create(createDraftDto);
+  async create(@Body() dto: CreateDraftDto, @GetUser('id') userId: number) {
+    return await this.draftService.create(dto, userId);
   }
 
   @ApiOkResponse({ type: [DraftEntity] })
+  @UseGuards(JwtGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  findAll() {
-    return this.draftService.findAll();
+  async findAll(@GetUser('id') userId: number) {
+    return await this.draftService.findAll(userId);
   }
 
   @ApiOkResponse({ type: DraftEntity })
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.draftService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.draftService.findOne(+id);
   }
 
   @ApiOkResponse({ type: DraftEntity })
+  @UseGuards(JwtGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDraftDto: UpdateDraftDto) {
-    return this.draftService.update(+id, updateDraftDto);
+  async update(
+    @Param('id') id: string,
+    @Body() dto: UpdateDraftDto,
+    @GetUser('id') userId: number,
+  ) {
+    return await this.draftService.update(+id, dto, userId);
   }
 
   @ApiNoContentResponse()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(JwtGuard)
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return await this.draftService.remove(+id);
+  async remove(@Param('id') id: string, @GetUser('id') userId: number) {
+    return await this.draftService.remove(+id, userId);
   }
 }

@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -7,6 +8,7 @@ import {
   HttpStatus,
   Patch,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiNoContentResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
@@ -23,12 +25,14 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @ApiOkResponse({ type: UserEntity })
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   getSelf(@GetUser() user: User) {
     return user;
   }
 
   @ApiOkResponse({ type: UserEntity })
+  @UseInterceptors(ClassSerializerInterceptor)
   @Patch()
   async update(@Body() dto: UpdateUserDto, @GetUser() user: User) {
     return await this.userService.update(user, dto);

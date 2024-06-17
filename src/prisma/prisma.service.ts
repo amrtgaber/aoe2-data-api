@@ -18,14 +18,8 @@ export class PrismaService extends PrismaClient {
   }
 
   // FOR TESTING ONLY
-  async cleanDb() {
+  async deleteUsers() {
     await this.user.deleteMany();
-    await this.unit.deleteMany();
-    await this.tech.deleteMany();
-    await this.building.deleteMany();
-    await this.civ.deleteMany();
-    await this.age.deleteMany();
-    await this.version.deleteMany();
   }
 
   /* istanbul ignore next */

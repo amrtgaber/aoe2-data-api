@@ -20,7 +20,6 @@ export class UserService {
     if (dto.password) {
       hash = await argon.hash(dto.password);
       data.hash = hash;
-      console.log({ hash });
     }
 
     return await this.prisma.user.update({

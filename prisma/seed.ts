@@ -1,10 +1,10 @@
 import { PrismaClient } from '@prisma/client';
-import { civs } from './seed-data/civs';
-import { units } from './seed-data/units';
-import { techs } from './seed-data/techs';
-import { buildings } from './seed-data/buildings';
-import { ages } from './seed-data/ages';
 import { clearStaticData } from './clear';
+import { ages } from './seed-data/ages';
+import { buildings } from './seed-data/buildings';
+import { civs } from './seed-data/civs';
+import { techs } from './seed-data/techs';
+import { units } from './seed-data/units';
 
 const API_VERSION = '1.0.0';
 const GAME_VERSION = '107882';

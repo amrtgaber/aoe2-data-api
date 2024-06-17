@@ -17,7 +17,7 @@
     "prisma:test:deploy": "dotenv -e .test.env -- prisma migrate deploy",
     "db:test:rm": "docker compose rm test-db -sfv",
     "db:test:up": "docker compose up test-db -d",
-    "db:test:restart": "npm run db:test:rm && npm run db:test:up && npm run prisma:test:deploy",
+    "db:test:restart": "npm run db:test:rm && npm run db:test:up && npm run prisma:test:deploy && npm run db:seed",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -103,6 +103,7 @@
     "testEnvironment": "node"
   },
   "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "ts-node prisma/seed.ts",
+    "schema": "./prisma/schema.prisma"
   }
 }

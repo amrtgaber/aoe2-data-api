@@ -1,22 +1,32 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, IsBoolean } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Civ } from '@prisma/client';
+import {
+  ArrayMinSize,
+  IsArray,
+  IsBoolean,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
+import { MIN_DRAFT_NAME_LENGTH } from '../../constants';
 
 export class CreateDraftDto {
   @ApiProperty()
   @IsString()
+  @MinLength(MIN_DRAFT_NAME_LENGTH)
   name: string;
 
   @ApiProperty()
   @IsString()
   @IsOptional()
-  desc: string;
+  desc?: string;
 
   @ApiProperty()
   @IsBoolean()
-  @Transform(({ value }) => value === 'true')
   private: boolean;
 
   @ApiProperty()
-  civs: [];
+  @IsArray()
+  @ArrayMinSize(1)
+  civs: Civ[];
 }
