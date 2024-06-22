@@ -3,8 +3,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as pactum from 'pactum';
 import { AppModule } from '../src/app.module';
 import { AuthDto } from '../src/auth/dto/auth.dto';
-import { CivEntity } from '../src/civ/entities/civ.entity';
-import { CreateDraftDto } from '../src/draft/dto/create-draft.dto';
 import { PrismaService } from '../src/prisma/prisma.service';
 
 const TEST_API_BASE_URL = `http://localhost:${process.env.TEST_PORT || 4001}`;
@@ -34,8 +32,6 @@ describe('App e2e', () => {
     await prisma.deleteUsers();
 
     pactum.request.setBaseUrl(TEST_API_BASE_URL);
-    const civs = await prisma.civ.findMany();
-    console.log({ civs });
   });
 
   afterAll(() => {
@@ -43,9 +39,6 @@ describe('App e2e', () => {
   });
 
   it('starts up', async () => {
-    const civs = await prisma.civ.findMany();
-    console.log({ civs });
-
     expect(app).toBeDefined();
   });
 
@@ -57,8 +50,6 @@ describe('App e2e', () => {
 
   describe('Auth', () => {
     it('should sign up', async () => {
-      // await pactum.spec().get(`/civs`).expectStatus(HttpStatus.OK).inspect();
-
       await pactum
         .spec()
         .post(`/auth/signup`)
@@ -234,39 +225,7 @@ describe('App e2e', () => {
   });
 
   describe('Draft', () => {
-    const draftDto: CreateDraftDto = {
-      name: 'draft name',
-      desc: 'draft desc',
-      private: true,
-      civs: [{ civName: 'Aztecs' }] as CivEntity[],
-    };
-
-    it('creates a draft', async () => {
-      // recreate deleted user
-      await pactum
-        .spec()
-        .post(`/auth/signup`)
-        .withBody(authDto)
-        .expectStatus(HttpStatus.CREATED);
-
-      await pactum
-        .spec()
-        .post(`/auth/login`)
-        .withBody(authDto)
-        .expectStatus(HttpStatus.OK)
-        .stores('accessToken', 'access_token');
-
-      // await pactum.spec().get(`/civs`).expectStatus(HttpStatus.OK).inspect();
-
-      // create draft
-      // await pactum
-      //   .spec()
-      //   .post(`/drafts`)
-      //   .withBody(draftDto)
-      //   .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
-      //   .expectStatus(HttpStatus.CREATED);
-    });
-
+    it.todo('creates a draft');
     it.todo('gets all drafts');
     it.todo('gets a draft by id');
     it.todo('edits a draft');

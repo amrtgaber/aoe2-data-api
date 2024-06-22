@@ -25,18 +25,26 @@ function getAgeId(ageName: string): number {
   return age.id;
 }
 
-const prisma = new PrismaClient();
+let prisma = new PrismaClient();
 
-async function main() {
+export async function main(prismaClient?: PrismaClient) {
+  if (prismaClient) prisma = prismaClient;
+
   await clearStaticData();
 
-  await addAges();
-  await addUnits();
-  await addTechs();
+  const ageTransactions = addAges();
+  const unitTransactions = addUnits();
+  const techTransactions = addTechs();
+  const buildingTransactions = addBuildings();
+  const civTransactions = addCivs();
 
-  const buildingTransactions = await addBuildings();
-  const civTransactions = await addCivs();
-  await prisma.$transaction([...buildingTransactions, ...civTransactions]);
+  await prisma.$transaction([
+    ...ageTransactions,
+    ...unitTransactions,
+    ...techTransactions,
+    ...buildingTransactions,
+    ...civTransactions,
+  ]);
 
   await addVersions();
 }
@@ -51,52 +59,88 @@ main()
     process.exit(1);
   });
 
-async function addAges() {
-  await prisma.age.createMany({
-    data: ages,
+function addAges() {
+  const transactions = [] as any;
+
+  ages.forEach((age) => {
+    transactions.push(
+      prisma.age.upsert({
+        where: {
+          id: age.id,
+        },
+        update: {},
+        create: age,
+      }),
+    );
   });
+
+  return transactions;
 }
 
-async function addUnits() {
-  const unitsData = units.map((unit) => {
-    return {
-      id: getUniqueId(),
-      unitName: unit.unitName,
-      ageId: getAgeId(unit.age),
-    };
+function addUnits() {
+  const transactions = [] as any;
+
+  units.forEach(async (unit) => {
+    const id = getUniqueId();
+
+    transactions.push(
+      prisma.unit.upsert({
+        where: {
+          id,
+        },
+        update: {},
+        create: {
+          id,
+          unitName: unit.unitName,
+          ageId: getAgeId(unit.age),
+        },
+      }),
+    );
   });
 
-  await prisma.unit.createMany({
-    data: unitsData,
-  });
+  return transactions;
 }
 
-async function addTechs() {
-  const techsData = techs.map((tech) => {
-    return {
-      id: getUniqueId(),
-      techName: tech.techName,
-      ageId: getAgeId(tech.age),
-    };
+function addTechs() {
+  const transactions = [] as any;
+
+  techs.forEach(async (tech) => {
+    const id = getUniqueId();
+
+    transactions.push(
+      prisma.tech.upsert({
+        where: {
+          id,
+        },
+        update: {},
+        create: {
+          id,
+          techName: tech.techName,
+          ageId: getAgeId(tech.age),
+        },
+      }),
+    );
   });
 
-  await prisma.tech.createMany({
-    data: techsData,
-  });
+  return transactions;
 }
 
 function addBuildings() {
   const transactions = [] as any;
 
-  buildings.forEach(async (building) => {
-    const ageId = getAgeId(building.age);
+  buildings.forEach((building) => {
+    const id = getUniqueId();
 
     transactions.push(
-      prisma.building.create({
-        data: {
-          id: getUniqueId(),
+      prisma.building.upsert({
+        where: {
+          id,
+        },
+        update: {},
+        create: {
+          id,
           buildingName: building.buildingName,
-          ageId,
+          ageId: getAgeId(building.age),
           units: {
             connect: building.units,
           },
@@ -114,11 +158,17 @@ function addBuildings() {
 function addCivs() {
   const transactions = [] as any;
 
-  civs.forEach(async (civ) => {
+  civs.forEach((civ) => {
+    const id = getUniqueId();
+
     transactions.push(
-      prisma.civ.create({
-        data: {
-          id: getUniqueId(),
+      prisma.civ.upsert({
+        where: {
+          id,
+        },
+        update: {},
+        create: {
+          id,
           civName: civ.civName,
           units: {
             connect: civ.units,
@@ -138,8 +188,12 @@ function addCivs() {
 }
 
 async function addVersions() {
-  await prisma.version.create({
-    data: {
+  await prisma.version.upsert({
+    where: {
+      id: VERSION_ID,
+    },
+    update: {},
+    create: {
       id: VERSION_ID,
       gameVersion: GAME_VERSION,
       apiVersion: API_VERSION,
