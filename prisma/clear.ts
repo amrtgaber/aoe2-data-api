@@ -3,10 +3,10 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export async function clearStaticData() {
+  await prisma.civ.deleteMany();
+  await prisma.building.deleteMany();
   await prisma.unit.deleteMany();
   await prisma.tech.deleteMany();
-  await prisma.building.deleteMany();
-  await prisma.civ.deleteMany();
   await prisma.age.deleteMany();
   await prisma.version.deleteMany();
 }

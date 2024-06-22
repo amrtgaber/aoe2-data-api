@@ -14,7 +14,7 @@ interface JwtPayload {
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor(private config: ConfigService, private prisma: PrismaService) {
+  constructor(config: ConfigService, private prisma: PrismaService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: config.get('JWT_SECRET') || process.env.JWT_SECRET,
@@ -32,7 +32,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       throw new ForbiddenException('User not found for authorization');
     }
 
-    // TODO: clean this up
     // delete password before returning the user object
     user.hash = '';
 

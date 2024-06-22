@@ -11,6 +11,8 @@ import { UnitModule } from './unit/unit.module';
 import { TechModule } from './tech/tech.module';
 import { AgeModule } from './age/age.module';
 import { VersionModule } from './version/version.module';
+import { DraftModule } from './draft/draft.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -23,6 +25,8 @@ import { VersionModule } from './version/version.module';
     TechModule,
     AgeModule,
     VersionModule,
+    DraftModule,
+    UserModule,
   ],
 })
 export class AppModule {}
