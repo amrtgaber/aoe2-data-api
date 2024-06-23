@@ -25,6 +25,9 @@ export class DraftService {
       },
       include: {
         civs: true,
+        _count: {
+          select: { likes: true },
+        },
       },
     });
   }
@@ -36,6 +39,9 @@ export class DraftService {
       },
       include: {
         civs: true,
+        _count: {
+          select: { likes: true },
+        },
       },
     });
   }
@@ -47,6 +53,9 @@ export class DraftService {
       },
       include: {
         civs: true,
+        _count: {
+          select: { likes: true },
+        },
       },
     });
 
@@ -93,6 +102,9 @@ export class DraftService {
       },
       include: {
         civs: true,
+        _count: {
+          select: { likes: true },
+        },
       },
     });
   }

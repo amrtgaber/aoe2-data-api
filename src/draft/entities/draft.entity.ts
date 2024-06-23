@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Draft, User } from '@prisma/client';
+import { Draft, Like, User } from '@prisma/client';
 import { Exclude } from 'class-transformer';
 
 export class DraftEntity implements Draft {
@@ -24,11 +24,17 @@ export class DraftEntity implements Draft {
   @ApiProperty()
   owner: User;
 
-  @Exclude()
+  @ApiProperty()
   ownerId: number;
 
   @ApiProperty()
   civs: [];
+
+  @Exclude()
+  likes: Like[];
+
+  @ApiProperty()
+  _count: { likes: number };
 
   constructor(partial: Partial<DraftEntity>) {
     Object.assign(this, partial);

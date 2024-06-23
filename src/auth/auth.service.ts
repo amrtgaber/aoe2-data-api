@@ -5,7 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import * as argon from 'argon2';
 
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthDto } from './dto/auth.dto';
 
