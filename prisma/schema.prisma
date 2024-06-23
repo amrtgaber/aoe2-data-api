@@ -19,7 +19,40 @@ model User {
   username String? @unique
   hash     String
 
+  drafts Draft[]
+  likes  Like[]
+
   @@map("users")
+}
+
+model Draft {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name    String
+  desc    String?
+  private Boolean @default(true)
+
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId Int
+  civs    Civ[]
+  likes   Like[]
+
+  @@map("drafts")
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  Int
+  draft   Draft @relation(fields: [draftId], references: [id], onDelete: Cascade)
+  draftId Int
+
+  @@map("likes")
 }
 
 model Civ {
@@ -30,6 +63,7 @@ model Civ {
   units     Unit[]
   techs     Tech[]
   buildings Building[]
+  drafts    Draft[]
 
   @@map("civs")
 }
