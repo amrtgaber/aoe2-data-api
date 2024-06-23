@@ -22,6 +22,9 @@ export class DraftEntity implements Draft {
   private: boolean;
 
   @ApiProperty()
+  gameVersion: string;
+
+  @ApiProperty()
   owner: User;
 
   @ApiProperty()

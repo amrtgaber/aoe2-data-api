@@ -1,19 +1,41 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { Civ } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateDraftDto } from './dto/create-draft.dto';
 import { UpdateDraftDto } from './dto/update-draft.dto';
+
+const MAX_DRAFTS_PER_USER = 1000;
 
 @Injectable()
 export class DraftService {
   constructor(private prisma: PrismaService) {}
 
   async create(dto: CreateDraftDto, userId: number) {
+    const draftCount = await this.prisma.draft.count({
+      where: {
+        ownerId: userId,
+      },
+    });
+
+    if (draftCount > MAX_DRAFTS_PER_USER) {
+      throw new UnprocessableEntityException(
+        `Owned drafts cannot exceed ${MAX_DRAFTS_PER_USER}`,
+      );
+    }
+
+    const gameVersion = (await this.prisma.version.findFirstOrThrow())
+      .gameVersion;
+
     return await this.prisma.draft.create({
       data: {
         name: dto.name,
         desc: dto.desc,
         private: dto.private,
+        gameVersion,
         owner: {
           connect: {
             id: userId,
@@ -87,6 +109,9 @@ export class DraftService {
       civs = oldDraft.civs;
     }
 
+    const gameVersion = (await this.prisma.version.findFirstOrThrow())
+      .gameVersion;
+
     return await this.prisma.draft.update({
       where: {
         id,
@@ -95,6 +120,7 @@ export class DraftService {
         name: dto.name ?? oldDraft.name,
         desc: dto.desc ?? oldDraft.desc,
         private: dto.private ?? oldDraft.private,
+        gameVersion,
         civs: {
           disconnect: oldDraft.civs.map((civ) => ({ id: civ.id })),
           connect: civs,

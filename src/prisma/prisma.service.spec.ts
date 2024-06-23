@@ -17,65 +17,25 @@ describe('PrismaService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('cleanDb()', () => {
+  describe('deleteUsers()', () => {
     it('should clean the database', async () => {
-      try {
-        await service.age.create({
-          data: {
-            id: 1,
-            ageName: 'dark age',
-          },
-        });
-      } catch {} // ignore unique constraint failure
+      await service.user.upsert({
+        where: {
+          id: 1,
+        },
+        update: {},
+        create: {
+          id: 1,
+          email: 'test@test.com',
+          hash: '',
+        },
+      });
 
-      try {
-        await service.unit.create({
-          data: {
-            unitName: 'villager',
-            ageId: 1,
-          },
-        });
-      } catch {} // ignore unique constraint failure
+      expect(await service.user.findMany()).toHaveLength(1);
 
-      try {
-        await service.tech.create({
-          data: {
-            techName: 'loom',
-            ageId: 1,
-          },
-        });
-      } catch {} // ignore unique constraint failure
+      await service.deleteUsers();
 
-      try {
-        await service.building.create({
-          data: {
-            buildingName: 'house',
-            ageId: 1,
-          },
-        });
-      } catch {} // ignore unique constraint failure
-
-      try {
-        await service.civ.create({
-          data: {
-            civName: 'Aztecs',
-          },
-        });
-      } catch {} // ignore unique constraint failure
-
-      expect(await service.age.findMany()).toHaveLength(1);
-      expect(await service.unit.findMany()).toHaveLength(1);
-      expect(await service.tech.findMany()).toHaveLength(1);
-      expect(await service.building.findMany()).toHaveLength(1);
-      expect(await service.civ.findMany()).toHaveLength(1);
-
-      await service.cleanDb();
-
-      expect(await service.age.findMany()).toHaveLength(0);
-      expect(await service.unit.findMany()).toHaveLength(0);
-      expect(await service.tech.findMany()).toHaveLength(0);
-      expect(await service.building.findMany()).toHaveLength(0);
-      expect(await service.civ.findMany()).toHaveLength(0);
+      expect(await service.user.findMany()).toHaveLength(0);
     });
   });
 });

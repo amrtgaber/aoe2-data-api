@@ -17,6 +17,7 @@ import {
   ApiNoContentResponse,
   ApiOkResponse,
   ApiTags,
+  ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { GetUser } from '../auth/decorator/get-user.decorator';
 import { JwtGuard } from '../auth/guard/jwt.guard';
@@ -31,6 +32,7 @@ export class DraftController {
   constructor(private readonly draftService: DraftService) {}
 
   @ApiCreatedResponse({ type: DraftEntity })
+  @ApiUnprocessableEntityResponse()
   @UseGuards(JwtGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()
