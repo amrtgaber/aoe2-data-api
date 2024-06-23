@@ -27,11 +27,15 @@ export class DraftService {
       );
     }
 
+    const gameVersion = (await this.prisma.version.findFirstOrThrow())
+      .gameVersion;
+
     return await this.prisma.draft.create({
       data: {
         name: dto.name,
         desc: dto.desc,
         private: dto.private,
+        gameVersion,
         owner: {
           connect: {
             id: userId,
@@ -105,6 +109,9 @@ export class DraftService {
       civs = oldDraft.civs;
     }
 
+    const gameVersion = (await this.prisma.version.findFirstOrThrow())
+      .gameVersion;
+
     return await this.prisma.draft.update({
       where: {
         id,
@@ -113,6 +120,7 @@ export class DraftService {
         name: dto.name ?? oldDraft.name,
         desc: dto.desc ?? oldDraft.desc,
         private: dto.private ?? oldDraft.private,
+        gameVersion,
         civs: {
           disconnect: oldDraft.civs.map((civ) => ({ id: civ.id })),
           connect: civs,
