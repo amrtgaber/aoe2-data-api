@@ -52,6 +52,7 @@ model Like {
   draft   Draft @relation(fields: [draftId], references: [id], onDelete: Cascade)
   draftId Int
 
+  @@unique([userId, draftId])
   @@map("likes")
 }
 

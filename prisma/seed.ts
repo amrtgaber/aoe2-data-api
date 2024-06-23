@@ -32,11 +32,16 @@ export async function main(prismaClient?: PrismaClient) {
 
   await clearStaticData();
 
+  console.log(`Preparing transactions...`);
+
   const ageTransactions = addAges();
   const unitTransactions = addUnits();
   const techTransactions = addTechs();
   const buildingTransactions = addBuildings();
   const civTransactions = addCivs();
+
+  console.log(`✅ Transactions prepared`);
+  console.log(`Applying transactions...`);
 
   await prisma.$transaction([
     ...ageTransactions,
@@ -45,6 +50,8 @@ export async function main(prismaClient?: PrismaClient) {
     ...buildingTransactions,
     ...civTransactions,
   ]);
+
+  console.log(`✅ Transactions applied`);
 
   await addVersions();
 }
