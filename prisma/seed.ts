@@ -31,6 +31,7 @@ export async function main(prismaClient?: PrismaClient) {
   if (prismaClient) prisma = prismaClient;
 
   await clearStaticData();
+  await addVersions();
 
   console.log(`Preparing transactions...`);
 
@@ -52,8 +53,6 @@ export async function main(prismaClient?: PrismaClient) {
   ]);
 
   console.log(`✅ Transactions applied`);
-
-  await addVersions();
 }
 
 main()
@@ -87,7 +86,7 @@ function addAges() {
 function addUnits() {
   const transactions = [] as any;
 
-  units.forEach(async (unit) => {
+  units.forEach((unit) => {
     const id = getUniqueId();
 
     transactions.push(
@@ -111,7 +110,7 @@ function addUnits() {
 function addTechs() {
   const transactions = [] as any;
 
-  techs.forEach(async (tech) => {
+  techs.forEach((tech) => {
     const id = getUniqueId();
 
     transactions.push(
