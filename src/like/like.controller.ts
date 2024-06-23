@@ -1,34 +1,59 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { LikeService } from './like.service';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import {
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { GetUser } from '../auth/decorator/get-user.decorator';
+import { JwtGuard } from '../auth/guard/jwt.guard';
 import { CreateLikeDto } from './dto/create-like.dto';
-import { UpdateLikeDto } from './dto/update-like.dto';
+import { LikeEntity } from './entities/like.entity';
+import { LikeService } from './like.service';
 
-@Controller('like')
+@ApiTags('Likes')
+@UseGuards(JwtGuard)
+@Controller('likes')
 export class LikeController {
   constructor(private readonly likeService: LikeService) {}
 
+  @ApiCreatedResponse({ type: LikeEntity })
+  @UseInterceptors(ClassSerializerInterceptor)
   @Post()
-  create(@Body() createLikeDto: CreateLikeDto) {
-    return this.likeService.create(createLikeDto);
+  async create(@Body() dto: CreateLikeDto, @GetUser('id') userId: number) {
+    return await this.likeService.create(dto, userId);
   }
 
+  @ApiOkResponse({ type: [LikeEntity] })
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  findAll() {
-    return this.likeService.findAll();
+  async findAll(@GetUser('id') userId: number) {
+    return await this.likeService.findAll(userId);
   }
 
+  @ApiOkResponse({ type: [LikeEntity] })
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.likeService.findOne(+id);
+  findOne(@Param('id') id: string, @GetUser('id') userId: number) {
+    return this.likeService.findOne(+id, userId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLikeDto: UpdateLikeDto) {
-    return this.likeService.update(+id, updateLikeDto);
-  }
-
+  @ApiNoContentResponse()
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.likeService.remove(+id);
+  remove(@Param('id') id: string, @GetUser('id') userId: number) {
+    return this.likeService.remove(+id, userId);
   }
 }

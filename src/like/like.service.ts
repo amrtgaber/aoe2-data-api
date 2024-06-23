@@ -1,26 +1,81 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateLikeDto } from './dto/create-like.dto';
-import { UpdateLikeDto } from './dto/update-like.dto';
 
 @Injectable()
 export class LikeService {
-  create(createLikeDto: CreateLikeDto) {
-    return 'This action adds a new like';
+  constructor(private prisma: PrismaService) {}
+
+  async create(dto: CreateLikeDto, userId: number) {
+    const draft = await this.prisma.draft.findUnique({
+      where: {
+        id: dto.draftId,
+      },
+    });
+
+    if (!draft) {
+      throw new NotFoundException('draft not found');
+    }
+
+    return await this.prisma.like.create({
+      data: {
+        user: {
+          connect: {
+            id: userId,
+          },
+        },
+        draft: {
+          connect: {
+            id: dto.draftId,
+          },
+        },
+      },
+    });
   }
 
-  findAll() {
-    return `This action returns all like`;
+  async findAll(userId: number) {
+    return await this.prisma.like.findMany({
+      where: {
+        userId,
+      },
+      include: {
+        draft: true,
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} like`;
+  async findOne(id: number, userId: number) {
+    const like = await this.prisma.like.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        draft: true,
+      },
+    });
+
+    if (!like || like.userId !== userId) {
+      throw new NotFoundException('like not found');
+    }
+
+    return like;
   }
 
-  update(id: number, updateLikeDto: UpdateLikeDto) {
-    return `This action updates a #${id} like`;
-  }
+  async remove(id: number, userId: number) {
+    const like = await this.prisma.like.findUnique({
+      where: {
+        id,
+      },
+    });
 
-  remove(id: number) {
-    return `This action removes a #${id} like`;
+    if (!like || like.userId !== userId) {
+      throw new NotFoundException('like not found');
+    }
+
+    return await this.prisma.like.delete({
+      where: {
+        id,
+      },
+    });
   }
 }
