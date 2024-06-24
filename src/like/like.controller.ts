@@ -18,13 +18,13 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { GetUser } from '../auth/decorator/get-user.decorator';
-import { JwtGuard } from '../auth/guard/jwt.guard';
+import { AccessGuard } from '../auth/guard/access.guard';
 import { CreateLikeDto } from './dto/create-like.dto';
 import { LikeEntity } from './entities/like.entity';
 import { LikeService } from './like.service';
 
 @ApiTags('Likes')
-@UseGuards(JwtGuard)
+@UseGuards(AccessGuard)
 @Controller('likes')
 export class LikeController {
   constructor(private readonly likeService: LikeService) {}

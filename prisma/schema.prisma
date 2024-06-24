@@ -15,9 +15,10 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  email    String  @unique
-  username String? @unique
-  hash     String
+  email        String  @unique
+  username     String? @unique
+  hash         String
+  refreshToken String?
 
   drafts Draft[]
   likes  Like[]
