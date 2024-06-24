@@ -13,13 +13,13 @@ import {
 import { ApiNoContentResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { GetUser } from '../auth/decorator/get-user.decorator';
-import { JwtGuard } from '../auth/guard/jwt.guard';
+import { AccessGuard } from '../auth/guard/access.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
 import { UserService } from './user.service';
 
 @ApiTags('Users')
-@UseGuards(JwtGuard)
+@UseGuards(AccessGuard)
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}

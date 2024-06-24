@@ -20,7 +20,7 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { GetUser } from '../auth/decorator/get-user.decorator';
-import { JwtGuard } from '../auth/guard/jwt.guard';
+import { AccessGuard } from '../auth/guard/access.guard';
 import { DraftService } from './draft.service';
 import { CreateDraftDto } from './dto/create-draft.dto';
 import { UpdateDraftDto } from './dto/update-draft.dto';
@@ -33,7 +33,7 @@ export class DraftController {
 
   @ApiCreatedResponse({ type: DraftEntity })
   @ApiUnprocessableEntityResponse()
-  @UseGuards(JwtGuard)
+  @UseGuards(AccessGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   async create(@Body() dto: CreateDraftDto, @GetUser('id') userId: number) {
@@ -41,7 +41,7 @@ export class DraftController {
   }
 
   @ApiOkResponse({ type: [DraftEntity] })
-  @UseGuards(JwtGuard)
+  @UseGuards(AccessGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   async findAll(@GetUser('id') userId: number) {
@@ -56,7 +56,7 @@ export class DraftController {
   }
 
   @ApiOkResponse({ type: DraftEntity })
-  @UseGuards(JwtGuard)
+  @UseGuards(AccessGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Patch(':id')
   async update(
@@ -69,7 +69,7 @@ export class DraftController {
 
   @ApiNoContentResponse()
   @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(JwtGuard)
+  @UseGuards(AccessGuard)
   @Delete(':id')
   async remove(@Param('id') id: string, @GetUser('id') userId: number) {
     return await this.draftService.remove(+id, userId);

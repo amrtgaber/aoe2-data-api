@@ -23,6 +23,9 @@ export class UserEntity implements User {
   @Exclude()
   hash: string;
 
+  @Exclude()
+  refreshToken: string;
+
   @ApiProperty()
   drafts: [];
 

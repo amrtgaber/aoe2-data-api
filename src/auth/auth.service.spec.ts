@@ -2,8 +2,8 @@ import { ForbiddenException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as argon from 'argon2';
 import { User } from '@prisma/client';
+import * as argon from 'argon2';
 
 import { createMockContext, MockContext } from '../../test/prisma.mock-context';
 import { PrismaService } from '../prisma/prisma.service';
@@ -21,6 +21,7 @@ describe('AuthService', () => {
     email: 'test@test.com',
     username: '',
     hash: '111',
+    refreshToken: '222',
   };
 
   beforeEach(async () => {
@@ -62,15 +63,15 @@ describe('AuthService', () => {
     it('should throw if passwords dont match', async () => {
       const hash1 = await argon.hash('these are');
 
-      await expect(
-        service.comparePassword(hash1, 'not the same'),
-      ).rejects.toThrow(ForbiddenException);
+      await expect(service.compareHash(hash1, 'not the same')).rejects.toThrow(
+        ForbiddenException,
+      );
     });
   });
 
   describe('signToken()', () => {
     it('should return access token', async () => {
-      const token = await service.signToken(testUser.id, testUser.email);
+      const token = await service.signTokens(testUser.id, testUser.email);
       expect(token).toHaveProperty('access_token');
       expect(token.access_token.length).toBeGreaterThan(0);
     });

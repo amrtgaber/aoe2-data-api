@@ -6,18 +6,15 @@ import { PassportStrategy } from '@nestjs/passport';
 import { User } from '@prisma/client';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PrismaService } from '../../prisma/prisma.service';
-
-interface JwtPayload {
-  sub: number;
-  email: string;
-}
+import { JwtPayload } from './jwt-payload';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class AccessTokenStrategy extends PassportStrategy(Strategy, 'access') {
   constructor(config: ConfigService, private prisma: PrismaService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: config.get('JWT_SECRET') || process.env.JWT_SECRET,
+      secretOrKey:
+        config.get('ACCESS_TOKEN_SECRET') || process.env.ACCESS_TOKEN_SECRET,
     });
   }
 
