@@ -6,7 +6,7 @@
   "private": true,
   "license": "MIT License",
   "engines": {
-    "node": "16.x"
+    "node": "18.x"
   },
   "scripts": {
     "db:seed": "ts-node prisma/seed.ts",
